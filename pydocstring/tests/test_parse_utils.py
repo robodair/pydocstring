@@ -43,7 +43,7 @@ class TestFunctions(unittest.TestCase):
         # devoted to the long word that we can't handle right now.
 '''
         result = parse_utils.parse_return_keyword(source)
-        self.assertEqual(result, [])
+        self.assertEqual(result, set())
 
     def test_return_kw_return(self):
         """Test the response when there is a return keyword"""
@@ -61,7 +61,7 @@ class TestFunctions(unittest.TestCase):
     return w.fill(text)
 '''
         result = parse_utils.parse_return_keyword(source)
-        self.assertEqual(result, [('return', 'w.fill(text)')])
+        self.assertEqual(result, set([('return', 'w.fill(text)')]))
 
     def test_return_kw_yield(self):
         """Test the response when there is a yield keyword"""
@@ -74,7 +74,7 @@ class TestFunctions(unittest.TestCase):
          yield num+7
 '''
         result = parse_utils.parse_return_keyword(source)
-        self.assertEqual(result, [('yield', 'num'), ('yield', 'num+7')])
+        self.assertEqual(result, set([('yield', 'num'), ('yield', 'num+7')]))
 
     def test_parse_exceptions(self):
         """Test that exceptions are found in functions"""
@@ -88,7 +88,7 @@ class TestFunctions(unittest.TestCase):
         print('caught this error: ' + repr(error))
 '''
         result = parse_utils.parse_function_exceptions(source)
-        self.assertEqual(result, [('raise', 'Exception'), ('raise', 'ValueError'),])
+        self.assertEqual(result, set([('raise', 'Exception'), ('raise', 'ValueError')]))
 
 
     def test_parse_class_attributes_simple(self):
@@ -105,11 +105,11 @@ class TestFunctions(unittest.TestCase):
         self.class_attr_override = 0
 '''
         result = parse_utils.parse_class_attributes(source)
-        self.assertEqual(result, [('class_attr_1', '0'),
+        self.assertEqual(result, set([('class_attr_1', '0'),
                                   ('class_attr_2', '2'),
                                   ('class_attr_override', '0'),
                                   ('inst_attr_1', '1'),
-                                  ('inst_attr_2', '2')])
+                                  ('inst_attr_2', '2')]))
 
     def test_parse_class_attributes_nested_indented(self):
         """Test class attributes are correctly garnered from a simple class"""
@@ -133,11 +133,11 @@ class TestFunctions(unittest.TestCase):
                 self.class_attr_override = 0
 '''
         result = parse_utils.parse_class_attributes(source)
-        self.assertEqual(result, [('class_attr_1', '0'),
+        self.assertEqual(result, set([('class_attr_1', '0'),
                                   ('class_attr_2', '2'),
                                   ('class_attr_override', '0'),
                                   ('inst_attr_1', '1'),
-                                  ('inst_attr_2', '2')])
+                                  ('inst_attr_2', '2')]))
 
     def test_parse_class_attributes_ignored_nested_class(self):
         """Test class attributes from a nested class are ignored"""
@@ -161,8 +161,8 @@ class TestFunctions(unittest.TestCase):
             self.class_attr_override = 0
 '''
         result = parse_utils.parse_class_attributes(source)
-        self.assertEqual(result, [('class_attr_1', '0'),
+        self.assertEqual(result, set([('class_attr_1', '0'),
                                   ('class_attr_2', '2'),
                                   ('class_attr_override', '0'),
                                   ('inst_attr_1', '1'),
-                                  ('inst_attr_2', '2')])
+                                  ('inst_attr_2', '2')]))

@@ -30,13 +30,13 @@ def parse_return_keyword(text):
         text: The text of a function
 
     Returns:
-        list of tuples: 'return' or 'yield' and the statement following it
+        set of tuples: 'return' or 'yield' and the statement following it
     """
     return_re = re.compile(r"^\s*(return|yield)\s*(.*)", re.MULTILINE)
     matches = set()
     for match in return_re.finditer(text):
         matches.add(match.groups())
-    return list(matches)
+    return matches
 
 
 def parse_function_exceptions(text):
@@ -45,13 +45,13 @@ def parse_function_exceptions(text):
         text: The text of a function
 
     Returns:
-        list of tuples: 'raise' and the Exception following it
+        set of tuples: 'raise' and the Exception following it
     """
     execp_re = re.compile(r"^[^\S\n]*(raise)[^\S\n]+([^\s\(]+)", re.MULTILINE)
     matches = set()
     for match in execp_re.finditer(text):
         matches.add(match.groups())
-    return list(matches)
+    return matches
 
 
 def parse_class_attributes(text):
@@ -61,13 +61,12 @@ def parse_class_attributes(text):
         text: The text of a function
 
     Returns:
-        list: A list of the class attributes
+        set: A list of the class attributes
     """
     dedent_text = textwrap.dedent(text)
     # Determine the indentation used in the class
     indentations = [line[:len(line) - len(line.lstrip())] for line in dedent_text.splitlines()]
     indent = min([indent for indent in indentations if indent])
-    print("Indent:'" + indent + "'")
     execp_re = re.compile(r"^(^{0}([A-Za-z0-9_]+)|^{1}self\.([A-Za-z0-9_]+))\s*=\s*(.*)"
                           .format(indent, indent * 2), re.MULTILINE)
     matches = OrderedDict()
@@ -76,5 +75,5 @@ def parse_class_attributes(text):
             matches[match.group(2)] = match.group(4)
         elif match.group(3): # instance variable
             matches[match.group(3)] = match.group(4)
-    matches_list = [(key, matches[key]) for key in matches]
-    return matches_list
+    matches_set = set([(key, matches[key]) for key in matches])
+    return matches_set
