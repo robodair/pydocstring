@@ -76,5 +76,5 @@ def parse_class_attributes(text):
             matches[match.group(2)] = match.group(4)
         elif match.group(3): # instance variable
             matches[match.group(3)] = match.group(4)
-    matches_list = [(key, value) for key, value in matches.iteritems()]
+    matches_list = [(key, matches[key]) for key in matches]
     return matches_list
