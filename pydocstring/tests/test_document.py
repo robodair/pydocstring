@@ -62,7 +62,7 @@ more nothing
             (1016, 1101),
             (1143, 1186),
             (1237, 1272),
-            (1317, 1343)
+            (1317, 1341)
         ]
 
         with open(FIND_DECL_FILE) as content_file:
@@ -83,15 +83,14 @@ more nothing
             (315, 342),
             (377, 426),
             # (480, 505), Not the match in a string, and regex avoids
-            # the declaration in the comment anyway
-            # (only whitespace before allowed)
+            # the declaration in the comment anyway (only whitespace before the decl allowed)
             (559, 645),
             (726, 801),
             (866, 950),
             (1016, 1101),
             (1143, 1186),
             (1237, 1272),
-            (1317, 1343)
+            (1317, 1341)
         ]
 
         with open(FIND_DECL_FILE) as content_file:
@@ -100,3 +99,88 @@ more nothing
         matches = doc.find_all_declarations()
 
         self.assertEqual(matches, expected)
+
+
+    def test_find_preceeding_start(self):
+        """Test preceeding declaration returns None at the start of the file"""
+        with open(FIND_DECL_FILE) as content_file:
+            source = content_file.read()
+        doc = document.Document(source, position=0)
+        preceeding = doc.find_preceeding_declaration()
+        self.assertEqual(preceeding, None)
+
+
+    def test_find_preceeding_middle_after(self):
+        """Test preceeding declaration correct in the middle of the file, after a declaration"""
+        with open(FIND_DECL_FILE) as content_file:
+            source = content_file.read()
+        doc = document.Document(source, position=650)
+        preceeding = doc.find_preceeding_declaration()
+        self.assertEqual(preceeding, (559, 645))
+
+
+    def test_find_preceeding_middle_inside(self):
+        """Test preceeding declaration correct in the middle of the file, inside a declaration"""
+        with open(FIND_DECL_FILE) as content_file:
+            source = content_file.read()
+        doc = document.Document(source, position=600)
+        preceeding = doc.find_preceeding_declaration()
+        self.assertEqual(preceeding, (559, 645))
+
+
+    def test_find_next_start(self):
+        """Test next declaration returns None at the end of the file"""
+        with open(FIND_DECL_FILE) as content_file:
+            source = content_file.read()
+        doc = document.Document(source, position=len(source))
+        nxt = doc.find_next_declaration()
+        self.assertEqual(nxt, None)
+
+
+    def test_find_next_middle_after(self):
+        """Test next declaration correct in the middle of the file, after a declaration"""
+        with open(FIND_DECL_FILE) as content_file:
+            source = content_file.read()
+        doc = document.Document(source, position=650)
+        nxt = doc.find_next_declaration()
+        self.assertEqual(nxt, (726, 801))
+
+
+    def test_find_next_middle_inside(self):
+        """Test next declaration correct in the middle of the file, inside a declaration"""
+        with open(FIND_DECL_FILE) as content_file:
+            source = content_file.read()
+        doc = document.Document(source, position=600)
+        nxt = doc.find_next_declaration()
+        self.assertEqual(nxt, (726, 801))
+
+
+    def test_get_block_middle(self):
+        """Test getting the block the cursor is currently in"""
+        with open(FIND_DECL_FILE) as content_file:
+            source = content_file.read()
+        doc = document.Document(source, position=600)
+        block = doc.get_block()
+
+        expected = \
+'''def method_ag_kw_normal(p1, p2, ls=[1], st="string", tup=(1, 2), di={"key", "value"}):
+    pass
+
+# method with keyword args of all types (no spaces) and single quotes
+'''
+        self.assertEqual(doc.get_range(*block), expected)
+
+
+    def test_get_block_end(self):
+        """Test getting the block the cursor is currently in, last method in the file"""
+        with open(FIND_DECL_FILE) as content_file:
+            source = content_file.read()
+        doc = document.Document(source, position=1342)
+        block = doc.get_block()
+
+        expected = \
+'''def comment_following(): # comment
+    pass
+'''
+        self.assertEqual(doc.get_range(*block), expected)
+

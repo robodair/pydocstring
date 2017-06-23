@@ -57,6 +57,6 @@ def method_type(p1: str, p2: list) -> dict:
 def method_expand(*args, **kwargs):
     pass
 
-# method with no trailing newline
-def no_trailing_newline():
+# method with a comment following
+def comment_following(): # comment
     pass

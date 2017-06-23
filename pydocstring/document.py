@@ -52,7 +52,7 @@ class Document(object):
         source (string): the source of the document
     """
 
-    def __init__(self, source):
+    def __init__(self, source, position=0):
         """Represents the source of a document provides useful methods like find_all and the ability
         to retrieve ranges of text
 
@@ -60,6 +60,8 @@ class Document(object):
             source (string): the source of the document
         """
         self.source = source
+        self.position = position
+        self.all_decls = []
 
 
     def find_all(self, pattern, flags=0, excludes=None):
@@ -93,6 +95,7 @@ class Document(object):
         Returns:
             list: A list of tuples of the ranges found
         """
+        # TODO: option to include the module docstring
         initial_ranges = self.find_all(ALL_DECL_RE, re.MULTILINE)
 
         final_ranges = []
@@ -115,8 +118,76 @@ class Document(object):
 
         return final_ranges
 
+    def find_preceeding_declaration(self, position=None):
+        """
+        Return the declaration immediately before the cursor at position (using the start of the
+        declaration)
 
+        Args:
+            position (int, optional): The position to look backward from, defaults to self.position
+
+        Returns:
+            None or tuple: The start and end of the declaration preceeding position, None if there
+            isn't one
+        """
+        # TODO: Option to include the module docstring position
+        position = position if position else self.position
+        for start, end in reversed(self.find_all_declarations()):
+            if start < position:
+                return start, end
+        return None
+
+    def find_next_declaration(self, position=None):
+        """
+        Return the declaration immediately after the cursor at `position` (using the start of the
+        declaration)
+
+        Args:
+            position (int, optional): The position to look forward from, defaults to self.position
+
+        Returns:
+            None or tuple: The start and end of the declaration preceeding position, None if there
+            isn't one
+        """
+        # TODO: Option to include the module docstring position
+        position = position if position else self.position
+        for start, end in self.find_all_declarations():
+            if start > position:
+                return start, end
+        return None
 
     def get_range(self, start, end):
         """Return the section of the document between start and end"""
         return self.source[start:end]
+
+
+    def get_block(self, position=None):
+        """Get the code block `position` is in (start declaration to the next declaration at the
+        same level)
+
+        Args:
+            position (int, optional): The position to find the block from
+
+        Returns:
+            None or tuple: The start and end of the declaration after position, None if there
+            isn't one
+        """
+        position = position if position else self.position
+        decl = self.find_preceeding_declaration(position=position)
+        decl_text = self.get_range(*decl)
+        # Would use space explicitly, but some heathens use tabs
+        indentation = len(decl_text) - len(decl_text.lstrip())
+        block_end = position
+        while True:
+            next_decl = self.find_next_declaration(position)
+            if not next_decl:
+                # Block reaches to end of file
+                block_end = len(self.source)
+                break
+            next_decl_text = self.get_range(*next_decl)
+            next_indentation = len(next_decl) - len(next_decl_text.lstrip())
+            if next_indentation <= indentation:
+                block_end = next_decl[0]
+                break
+        print(self.get_range(decl[0], block_end))
+        return decl[0], block_end
