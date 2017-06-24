@@ -1,10 +1,10 @@
-"""Tests for function module"""
+"""Tests for parse_utils module"""
 
 import unittest
 from .. import parse_utils
 
-class TestFunctions(unittest.TestCase):
-    """Test functionality of the functions module"""
+class TestParseUtils(unittest.TestCase):
+    """Test functionality of the parse_utils module"""
 
     def test_return_kw_none(self):
         """Test the response when there is no return keyword"""
@@ -106,10 +106,10 @@ class TestFunctions(unittest.TestCase):
 '''
         result = parse_utils.parse_class_attributes(source)
         self.assertEqual(result, set([('class_attr_1', '0'),
-                                  ('class_attr_2', '2'),
-                                  ('class_attr_override', '0'),
-                                  ('inst_attr_1', '1'),
-                                  ('inst_attr_2', '2')]))
+                                      ('class_attr_2', '2'),
+                                      ('class_attr_override', '0'),
+                                      ('inst_attr_1', '1'),
+                                      ('inst_attr_2', '2')]))
 
     def test_parse_class_attributes_nested_indented(self):
         """Test class attributes are correctly garnered from a simple class"""
@@ -134,10 +134,10 @@ class TestFunctions(unittest.TestCase):
 '''
         result = parse_utils.parse_class_attributes(source)
         self.assertEqual(result, set([('class_attr_1', '0'),
-                                  ('class_attr_2', '2'),
-                                  ('class_attr_override', '0'),
-                                  ('inst_attr_1', '1'),
-                                  ('inst_attr_2', '2')]))
+                                      ('class_attr_2', '2'),
+                                      ('class_attr_override', '0'),
+                                      ('inst_attr_1', '1'),
+                                      ('inst_attr_2', '2')]))
 
     def test_parse_class_attributes_ignored_nested_class(self):
         """Test class attributes from a nested class are ignored"""

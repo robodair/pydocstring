@@ -61,7 +61,7 @@ def parse_class_attributes(text):
         text: The text of a function
 
     Returns:
-        set: A list of the class attributes
+        set of tuples: The attribute names and an expression following one of their assignments
     """
     dedent_text = textwrap.dedent(text)
     # Determine the indentation used in the class
