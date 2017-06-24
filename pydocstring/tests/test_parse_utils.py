@@ -162,7 +162,39 @@ class TestParseUtils(unittest.TestCase):
 '''
         result = parse_utils.parse_class_attributes(source)
         self.assertEqual(result, set([('class_attr_1', '0'),
-                                  ('class_attr_2', '2'),
-                                  ('class_attr_override', '0'),
-                                  ('inst_attr_1', '1'),
-                                  ('inst_attr_2', '2')]))
+                                      ('class_attr_2', '2'),
+                                      ('class_attr_override', '0'),
+                                      ('inst_attr_1', '1'),
+                                      ('inst_attr_2', '2')]))
+
+
+    def test_parse_module_attributes(self):
+        """Test module attributes are identified and returned correctly"""
+        source = \
+'''"""A Module Docstring"""
+CONST_MODULE_ATTR = "constant"
+print "a print statement"
+print("print with brackets")
+print 0 == 0
+module_attr_1 = 0
+# commented_module_attr = 2
+someothermodule.thing = 20
+'''
+        result = parse_utils.parse_module_attributes(source)
+        self.assertEqual(result, set([("CONST_MODULE_ATTR", '"constant"'),
+                                      ("module_attr_1", "0")]))
+
+    def test_parse_module_attributes_none(self):
+        """Test module attributes are identified and returned correctly, when there are none"""
+        source = \
+'''"""A Module Docstring"""
+# CONST_MODULE_ATTR = "constant"
+print "a print statement"
+print("print with brackets")
+print 0 == 0
+module_attr_1 = 0
+# commented_module_attr = 2
+# someothermodule.thing = 20
+'''
+        result = parse_utils.parse_module_attributes(source)
+        self.assertEqual(result, set([]))

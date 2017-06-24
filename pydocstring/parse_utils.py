@@ -77,3 +77,19 @@ def parse_class_attributes(text):
             matches[match.group(3)] = match.group(4)
     matches_set = set([(key, matches[key]) for key in matches])
     return matches_set
+
+def parse_module_attributes(text):
+    """Scan a module to find all of it's attributes
+
+    Args:
+        text: the text of the module
+
+    Returns:
+        set of tuples: The attribute name and expression following a (module level) assignment
+    """
+    attrib_re = re.compile(r"^([A-Za-z0-9_]+)\s*=\s*(.*)", re.MULTILINE)
+    matches = OrderedDict()
+    for match in attrib_re.finditer(text):
+        matches[match.group(1)] = match.group(2)
+    matches_set = set([(key, matches[key]) for key in matches])
+    return matches_set
