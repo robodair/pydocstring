@@ -283,7 +283,6 @@ someothermodule.thing = 20
 print "a print statement"
 print("print with brackets")
 print 0 == 0
-module_attr_1 = 0
 # commented_module_attr = 2
 # someothermodule.thing = 20
 '''
