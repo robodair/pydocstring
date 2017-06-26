@@ -3,24 +3,71 @@ from __future__ import print_function
 import re
 import textwrap
 from collections import OrderedDict
+import ast
 
-# TODO: parse_function_parameters method
-# def parse_function_parameters():
-#     """Parse function parameters into an OrderedDict of Parameters
+def parse_function_declaration(declaration):
+    """Parse function parameters into an OrderedDict of Parameters and the return type (if any)
 
-#     Args:
-#         s (str): everything in the parenthesis of a function
-#             declaration
-#         ret_annotation (str): return annotation if any
-#         default_type (str): default type text
-#         default_description (str): default text
-#         optional_tag (str): tag included with type for kwargs when
-#             they are created
+    Args:
+        declaration: The function declaration (e.g. everything from 'def' to the final ':')
 
-#     Returns:
-#         OrderedDict containing Parameter instances
-#     """
+    Returns:
+        tuple: OrderedDict for parameters, and a string or None for return type
 
+        OrderedDict Structure:
+        ```
+        {
+            "param_name": {
+                "default": "default value as a string",
+                "type": "parameter type as a string or None"
+                }
+        }
+        ```
+    """
+    # FIXME: This doesn't support recursive brackets e.g: param=((1, 2), (3, 4)), need better engine
+    # but what we can do is split on = and make sure the trimmed first group is all alphanumeric
+    param_sep = re.compile(r",(?![^({[]*[]})])") # match commas not inside brackets
+    params_re = re.compile(r"\((.*)\)") # everything between outermost brackets
+    params_str = params_re.search(declaration).group(1) # inside brackets
+    params_str = "" if not params_str else params_str.strip()
+    params_list = param_sep.split(params_str)
+
+    param_dict = OrderedDict()
+
+    for param in params_list:
+        param_default = None
+        param_name = None
+        param_type = None
+
+        paramstr = param.strip()
+        param_segments = param.split('=', 1) # split only on the first occurrence of '='
+        if len(param_segments) > 1:
+            param_name = param_segments[0].strip()
+            param_default = param_segments[1].strip()
+            try:
+                param_type = ast.literal_eval(param_default)
+            except:
+                pass # can't determine type, doesn't matter
+        else:
+            param_segments = param.split(':', 1)
+            if len(param_segments) > 1:
+                param_name = param_segments[0].strip()
+                param_type = param_segments[1].strip()
+            else:
+                param_name = param.strip()
+        param_dict[param_name] = {
+            "default": param_default,
+            "type": param_type
+        }
+
+    # find the return type, if specified in the declaration
+    return_type = None
+    return_type_re = re.compile(r"\)\s+->\s+(.*)\s*:")
+    return_type_match = return_type_re.search(declaration)
+    if return_type_match:
+        return_type = return_type_match.group(1)
+
+    return param_dict, return_type
 
 def parse_return_keyword(text):
     """Scan a function's code to look for how it returns, and what follows the return or yield

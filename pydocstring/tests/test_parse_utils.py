@@ -1,15 +1,107 @@
 """Tests for parse_utils module"""
 
 import unittest
+from collections import OrderedDict
 from .. import parse_utils
+
 
 class TestParseUtils(unittest.TestCase):
     """Test functionality of the parse_utils module"""
 
+    def test_parse_function_declaration(self):
+        """Test function parameters and return type are identified and returned as expected"""
+        decls = [
+            "def method_norm():",
+            "def method_params(p1, p2):",
+            "class OldClass():",
+            "class NewClass(object):",
+            "    def __init__(self, c1, c2: int):",
+            "    def class_method(self):",
+            "def method_multiline(param1,\
+                        param2):",
+            'def method_ag_kw_normal(p1, p2, ls=[1], st="string", tup=(1, 2), di={"key", "value"}):',
+            "def method_kw_normal(ls=[1], st='string', tup=(1, 2), di={'key', 'value'}):",
+            'def method_kw_space(ls = [ 1 ], st = "string", tup = (1, 2), di = {"key", "value"}):',
+            'def method_kw_mixed_space(ls= [1 ], st ="string", tup= (1, 2), di ={"key", "value"}):',
+            "def method_type(p1: str, p2: list) -> dict:",
+            "def method_expand(*args, **kwargs):",
+            "def comment_following():"
+        ]
+        expected = [
+            (OrderedDict([
+                ('', {'default': None, 'type': None})]),
+             None),
+            (OrderedDict([
+                ('p1', {'default': None, 'type': None}),
+                ('p2', {'default': None, 'type': None})]),
+             None),
+            (OrderedDict([
+                ('', {'default': None, 'type': None})]),
+             None),
+            (OrderedDict([
+                ('object', {'default': None, 'type': None})]),
+             None),
+            (OrderedDict([
+                ('self', {'default': None, 'type': None}),
+                ('c1', {'default': None, 'type': None}),
+                ('c2', {'default': None, 'type': 'int'})]),
+             None),
+            (OrderedDict([
+                ('self', {'default': None, 'type': None})]),
+             None),
+            (OrderedDict([
+                ('param1', {'default': None, 'type': None}),
+                ('param2', {'default': None, 'type': None})]),
+             None),
+            (OrderedDict([
+                ('p1', {'default': None, 'type': None}),
+                ('p2', {'default': None, 'type': None}),
+                ('ls', {'default': '[1]', 'type': [1]}),
+                ('st', {'default': '"string"', 'type': 'string'}),
+                ('tup', {'default': '(1, 2)', 'type': (1, 2)}),
+                ('di', {'default': '{"key", "value"}', 'type': None})]),
+             None),
+            (OrderedDict([
+                ('ls', {'default': '[1]', 'type': [1]}),
+                ('st', {'default': "'string'", 'type': 'string'}),
+                ('tup', {'default': '(1, 2)', 'type': (1, 2)}),
+                ('di', {'default': "{'key', 'value'}", 'type': None})]),
+             None),
+            (OrderedDict([
+                ('ls', {'default': '[ 1 ]', 'type': [1]}),
+                ('st', {'default': '"string"', 'type': 'string'}),
+                ('tup', {'default': '(1, 2)', 'type': (1, 2)}),
+                ('di', {'default': '{"key", "value"}', 'type': None})]),
+             None),
+            (OrderedDict([
+                ('ls', {'default': '[1 ]', 'type': [1]}),
+                ('st', {'default': '"string"', 'type': 'string'}),
+                ('tup', {'default': '(1, 2)', 'type': (1, 2)}),
+                ('di', {'default': '{"key", "value"}', 'type': None})]),
+             None),
+            (OrderedDict([
+                ('p1', {'default': None, 'type': 'str'}),
+                ('p2', {'default': None, 'type': 'list'})]),
+             'dict'),
+            (OrderedDict([
+                ('*args', {'default': None, 'type': None}),
+                ('**kwargs', {'default': None, 'type': None})]),
+             None),
+            (OrderedDict([
+                ('', {'default': None, 'type': None})]),
+             None)
+        ]
+
+        results = []
+        for decl in decls:
+            results.append(parse_utils.parse_function_declaration(decl))
+
+        self.assertEqual(results, expected)
+
     def test_return_kw_none(self):
         """Test the response when there is no return keyword"""
         source = \
-'''    def _handle_long_word(self, reversed_chunks, cur_line, cur_len, width):
+            '''    def _handle_long_word(self, reversed_chunks, cur_line, cur_len, width):
         """_handle_long_word(chunks : [string],
                              cur_line : [string],
                              cur_len : int, width : int)
@@ -48,7 +140,7 @@ class TestParseUtils(unittest.TestCase):
     def test_return_kw_return(self):
         """Test the response when there is a return keyword"""
         source = \
-'''def fill(text, width=70, **kwargs):
+            '''def fill(text, width=70, **kwargs):
     """Fill a single paragraph of text, returning a new string.
 
     Reformat the single paragraph in 'text' to fit in lines of no more
@@ -66,7 +158,7 @@ class TestParseUtils(unittest.TestCase):
     def test_return_kw_yield(self):
         """Test the response when there is a yield keyword"""
         source = \
-'''def firstn(n):
+            '''def firstn(n):
      num = 0
      while num < n:
          yield num
@@ -79,7 +171,7 @@ class TestParseUtils(unittest.TestCase):
     def test_parse_exceptions(self):
         """Test that exceptions are found in functions"""
         source = \
-'''def demo_bad_catch():
+            '''def demo_bad_catch():
     try:
         raise ValueError('represents a hidden bug, do not catch this')
         raise Exception('This is the exception you expect to handle')
@@ -88,13 +180,13 @@ class TestParseUtils(unittest.TestCase):
         print('caught this error: ' + repr(error))
 '''
         result = parse_utils.parse_function_exceptions(source)
-        self.assertEqual(result, set([('raise', 'Exception'), ('raise', 'ValueError')]))
-
+        self.assertEqual(result, set(
+            [('raise', 'Exception'), ('raise', 'ValueError')]))
 
     def test_parse_class_attributes_simple(self):
         """Test class attributes are correctly garnered from a simple class"""
         source = \
-'''class TestClass(object):
+            '''class TestClass(object):
     class_attr_1 = 0
     class_attr_2 = 2
     class_attr_override = 3
@@ -114,7 +206,7 @@ class TestParseUtils(unittest.TestCase):
     def test_parse_class_attributes_nested_indented(self):
         """Test class attributes are correctly garnered from a simple class"""
         source = \
-'''    class TestClass(object):
+            '''    class TestClass(object):
         class_attr_1 = 0
         class_attr_2 = 2
         class_attr_override = 3
@@ -142,7 +234,7 @@ class TestParseUtils(unittest.TestCase):
     def test_parse_class_attributes_ignored_nested_class(self):
         """Test class attributes from a nested class are ignored"""
         source = \
-'''class TestClass(object):
+            '''class TestClass(object):
     class_attr_1 = 0
     class_attr_2 = 2
     class_attr_override = 3
@@ -167,11 +259,10 @@ class TestParseUtils(unittest.TestCase):
                                       ('inst_attr_1', '1'),
                                       ('inst_attr_2', '2')]))
 
-
     def test_parse_module_attributes(self):
         """Test module attributes are identified and returned correctly"""
         source = \
-'''"""A Module Docstring"""
+            '''"""A Module Docstring"""
 CONST_MODULE_ATTR = "constant"
 print "a print statement"
 print("print with brackets")
@@ -187,7 +278,7 @@ someothermodule.thing = 20
     def test_parse_module_attributes_none(self):
         """Test module attributes are identified and returned correctly, when there are none"""
         source = \
-'''"""A Module Docstring"""
+            '''"""A Module Docstring"""
 # CONST_MODULE_ATTR = "constant"
 print "a print statement"
 print("print with brackets")
