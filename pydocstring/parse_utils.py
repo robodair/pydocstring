@@ -1,5 +1,8 @@
-"""Utilities for dealing with functions as blocks of text e.g. parsing parameters, return values"""
-from __future__ import print_function
+"""
+Utilities for dealing with functions as blocks of text
+
+e.g. parsing parameters, return values
+"""
 import re
 import textwrap
 from collections import OrderedDict
@@ -34,7 +37,6 @@ def parse_function_declaration(declaration):
     params_str = params_re.search(declaration).group(1) # inside brackets
     params_str = "" if not params_str else params_str.strip()
     params_list = [x for x in param_sep.split(params_str) if x.strip() != "*" and x.strip()]
-    print(params_list)
 
     param_dict = OrderedDict()
 
@@ -89,13 +91,13 @@ def parse_return_keyword(text):
         text: The text of a function
 
     Returns:
-        set of tuples: 'return' or 'yield' and the statement following it
+        list of tuples: 'return' or 'yield' and the statement following it
     """
     return_re = re.compile(r"^\s*(return|yield)\s*(.*)", re.MULTILINE)
     matches = set()
     for match in return_re.finditer(text):
         matches.add(match.groups())
-    return matches
+    return list(matches)
 
 
 def parse_function_exceptions(text):
@@ -104,13 +106,13 @@ def parse_function_exceptions(text):
         text: The text of a function
 
     Returns:
-        set of tuples: 'raise' and the Exception following it
+        list: The names of exceptions raised in the function
     """
     execp_re = re.compile(r"^[^\S\n]*(raise)[^\S\n]+([^\s\(]+)", re.MULTILINE)
     matches = set()
     for match in execp_re.finditer(text):
-        matches.add(match.groups())
-    return matches
+        matches.add(match.group(2))
+    return list(matches)
 
 
 def parse_class_attributes(text):
@@ -120,7 +122,7 @@ def parse_class_attributes(text):
         text: The text of a function
 
     Returns:
-        set of tuples: The attribute names and an expression following one of their assignments
+        list of tuples: The attribute names and an expression following one of their assignments
     """
     dedent_text = textwrap.dedent(text)
     # Determine the indentation used in the class
@@ -135,7 +137,7 @@ def parse_class_attributes(text):
         elif match.group(3): # instance variable
             matches[match.group(3)] = match.group(4)
     matches_set = set([(key, matches[key]) for key in matches])
-    return matches_set
+    return list(matches_set)
 
 def parse_module_attributes(text):
     """Scan a module to find all of it's attributes
@@ -144,11 +146,11 @@ def parse_module_attributes(text):
         text: the text of the module
 
     Returns:
-        set of tuples: The attribute name and expression following a (module level) assignment
+        list of tuples: The attribute name and expression following a (module level) assignment
     """
     attrib_re = re.compile(r"^([A-Za-z0-9_]+)\s*=\s*(.*)", re.MULTILINE)
     matches = OrderedDict()
     for match in attrib_re.finditer(text):
         matches[match.group(1)] = match.group(2)
     matches_set = set([(key, matches[key]) for key in matches])
-    return matches_set
+    return list(matches_set)

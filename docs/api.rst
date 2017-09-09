@@ -7,4 +7,6 @@ API
 
    pydocstring
    pydocstring.document
+   pydocstring.exc
+   pydocstring.formatters.google
    pydocstring.parse_utils

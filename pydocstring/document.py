@@ -1,4 +1,6 @@
-"""Utilities for manipulating python a document (provided as 'source') to many methods"""
+"""
+Utilities for manipulating a python document
+"""
 
 # Much of the logic here has been adapted from the SublimeAutoDocstring Project,
 # which is also MIT licenced.
@@ -28,8 +30,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-from __future__ import print_function
 import re
 
 __CLASS_RE = r"(class)\s+([^\s\(\):]+)\s*(\(([\s\S]*?)\))?"
@@ -40,7 +40,7 @@ CLASS_DECL_RE = r"^[^\S\n]*{0}\s*:".format(__CLASS_RE)
 FUNC_DECL_RE = r"^[^\S\n]*{0}\s*:".format(__FUNC_RE)
 
 # Yes, this will swallow a large chunk of the document if there's an open string
-# (like one for autocomplete), but in that case we're ignoring everythong after the cursor anyway
+# (like one for autocomplete), but in that case we're ignoring everything after the cursor anyway
 PYTHON_STRINGS = r"(\"\"\"[\s\S]*?\"\"\")|(\"[\s\S]*?\")|(\'\'\'[\s\S]*?\'\'\')|(\'[\s\S]*?\')"
 PYTHON_COMMENTS = r"#.*"
 
@@ -58,6 +58,7 @@ class Document(object):
 
         Args:
             source (string): the source of the document
+            position (int): position of the cursor in the file
         """
         self.source = source
         self.position = position
@@ -154,7 +155,16 @@ class Document(object):
         return None
 
     def get_range(self, start, end):
-        """Return the section of the document between start and end"""
+        """
+        Return the section of the document between start and end
+
+        Args:
+            start (int): start position of range
+            end (int): end position of range
+
+        Returns:
+            str: the text on the given range
+        """
         return self.source[start:end]
 
 
@@ -163,7 +173,8 @@ class Document(object):
         same level)
 
         Args:
-            position (int, optional): The position to find the block from
+            position (int, optional): The position to find the block from, defaults to the position
+                used for instantiation
 
         Returns:
             None or tuple: The start and end of the declaration after position, None if there
@@ -171,7 +182,10 @@ class Document(object):
         """
         position = position if position else self.position
         decl = self.find_preceeding_declaration(position=position)
-        decl_text = self.get_range(*decl)
+        if not decl:
+            return (position, position)
+        else:
+            decl_text = self.get_range(*decl)
         # Would use space explicitly, but some heathens use tabs
         indentation = len(decl_text) - len(decl_text.lstrip())
         block_end = position
@@ -186,5 +200,4 @@ class Document(object):
             if next_indentation <= indentation:
                 block_end = next_decl[0]
                 break
-        print(self.get_range(decl[0], block_end))
         return decl[0], block_end
