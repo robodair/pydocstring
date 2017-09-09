@@ -1,5 +1,6 @@
 # pydocstring
 [![Travis CI Build Status](https://travis-ci.org/robodair/pydocstring.svg?branch=master)](https://travis-ci.org/robodair/pydocstring)
+[![Documentation Status](https://readthedocs.org/projects/pydocstring/badge/?version=latest)](http://pydocstring.readthedocs.io/en/latest/?badge=latest)
 
 Python package for autogenerating python docstrings, and switching between common docstring formats
 
