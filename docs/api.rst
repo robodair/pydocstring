@@ -1,8 +1,8 @@
-pydocstring api
-===============
+API
+===
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree: api
    :template: module.rst
 
    pydocstring
