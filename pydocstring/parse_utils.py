@@ -12,7 +12,7 @@ def parse_function_declaration(declaration):
         declaration: The function declaration (e.g. everything from 'def' to the final ':')
 
     Returns:
-        tuple: OrderedDict for parameters, and a string or None for return type
+        tuple: OrderedDict of parameters, and a string or None for return type
 
         OrderedDict Structure:
         ```
@@ -30,7 +30,8 @@ def parse_function_declaration(declaration):
     params_re = re.compile(r"\((.*)\)") # everything between outermost brackets
     params_str = params_re.search(declaration).group(1) # inside brackets
     params_str = "" if not params_str else params_str.strip()
-    params_list = param_sep.split(params_str)
+    params_list = [x for x in param_sep.split(params_str) if x.strip() != "*" and x.strip()]
+    print(params_list)
 
     param_dict = OrderedDict()
 
@@ -45,7 +46,7 @@ def parse_function_declaration(declaration):
             param_name = param_segments[0].strip()
             param_default = param_segments[1].strip()
             try:
-                param_type = ast.literal_eval(param_default)
+                param_type = type(ast.literal_eval(param_default)).__name__
             except:
                 pass # can't determine type, doesn't matter
         else:

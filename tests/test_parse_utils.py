@@ -8,95 +8,175 @@ from pydocstring import parse_utils
 class TestParseUtils(unittest.TestCase):
     """Test functionality of the parse_utils module"""
 
-    def test_parse_function_declaration(self):
-        """Test function parameters and return type are identified and returned as expected"""
-        decls = [
-            "def method_norm():",
-            "def method_params(p1, p2):",
-            "class OldClass():",
-            "class NewClass(object):",
-            "    def __init__(self, c1, c2: int):",
-            "    def class_method(self):",
-            "def method_multiline(param1,\
-                        param2):",
-            'def method_ag_kw_normal(p1, p2, ls=[1], st="string", tup=(1, 2), di={"key", "value"}):',
-            "def method_kw_normal(ls=[1], st='string', tup=(1, 2), di={'key', 'value'}):",
-            'def method_kw_space(ls = [ 1 ], st = "string", tup = (1, 2), di = {"key", "value"}):',
-            'def method_kw_mixed_space(ls= [1 ], st ="string", tup= (1, 2), di ={"key", "value"}):',
-            "def method_type(p1: str, p2: list) -> dict:",
-            "def method_expand(*args, **kwargs):",
-            "def comment_following():"
-        ]
-        expected = [
-            (OrderedDict([
-                ('', {'default': None, 'type': None})]),
-             None),
-            (OrderedDict([
+    def test_no_params(self):
+        decl = "def method_norm():"
+        print("Decl Was:", decl)
+        expected_params = OrderedDict()
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_basic_params(self):
+        decl = "def method_params(p1, p2):"
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
                 ('p1', {'default': None, 'type': None}),
-                ('p2', {'default': None, 'type': None})]),
-             None),
-            (OrderedDict([
-                ('', {'default': None, 'type': None})]),
-             None),
-            (OrderedDict([
-                ('object', {'default': None, 'type': None})]),
-             None),
-            (OrderedDict([
+                ('p2', {'default': None, 'type': None})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test__init__(self):
+        decl = "    def __init__(self, c1, c2: int):"
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
                 ('self', {'default': None, 'type': None}),
                 ('c1', {'default': None, 'type': None}),
-                ('c2', {'default': None, 'type': 'int'})]),
-             None),
-            (OrderedDict([
-                ('self', {'default': None, 'type': None})]),
-             None),
-            (OrderedDict([
+                ('c2', {'default': None, 'type': 'int'})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_class_method(self):
+        decl = "    def class_method(self):"
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
+                ('self', {'default': None, 'type': None})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_multiline_method(self):
+        decl = "def method_multiline(param1,\
+                        param2):"
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
                 ('param1', {'default': None, 'type': None}),
-                ('param2', {'default': None, 'type': None})]),
-             None),
-            (OrderedDict([
+                ('param2', {'default': None, 'type': None})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_kw_1(self):
+        decl = 'def method_ag_kw_normal(p1, p2, ls=[1], st="string", tup=(1, 2), di={"key": "value"}):'
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
                 ('p1', {'default': None, 'type': None}),
                 ('p2', {'default': None, 'type': None}),
-                ('ls', {'default': '[1]', 'type': [1]}),
-                ('st', {'default': '"string"', 'type': 'string'}),
-                ('tup', {'default': '(1, 2)', 'type': (1, 2)}),
-                ('di', {'default': '{"key", "value"}', 'type': None})]),
-             None),
-            (OrderedDict([
-                ('ls', {'default': '[1]', 'type': [1]}),
-                ('st', {'default': "'string'", 'type': 'string'}),
-                ('tup', {'default': '(1, 2)', 'type': (1, 2)}),
-                ('di', {'default': "{'key', 'value'}", 'type': None})]),
-             None),
-            (OrderedDict([
-                ('ls', {'default': '[ 1 ]', 'type': [1]}),
-                ('st', {'default': '"string"', 'type': 'string'}),
-                ('tup', {'default': '(1, 2)', 'type': (1, 2)}),
-                ('di', {'default': '{"key", "value"}', 'type': None})]),
-             None),
-            (OrderedDict([
-                ('ls', {'default': '[1 ]', 'type': [1]}),
-                ('st', {'default': '"string"', 'type': 'string'}),
-                ('tup', {'default': '(1, 2)', 'type': (1, 2)}),
-                ('di', {'default': '{"key", "value"}', 'type': None})]),
-             None),
-            (OrderedDict([
+                ('ls', {'default': '[1]', 'type': 'list'}),
+                ('st', {'default': '"string"', 'type': 'str'}),
+                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+                ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_kw_2(self):
+        decl = "def method_kw_normal(ls=[1], st='string', tup=(1, 2), se={'one', 'two'}):"
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
+                ('ls', {'default': '[1]', 'type': 'list'}),
+                ('st', {'default': "'string'", 'type': 'str'}),
+                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+                ('se', {'default': "{'one', 'two'}", 'type': 'set'})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_kw_3(self):
+        decl = 'def method_kw_space(ls = [ 1 ], st = "string", tup = (1, 2), di = {"key": "value"}):'
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
+                ('ls', {'default': '[ 1 ]', 'type': 'list'}),
+                ('st', {'default': '"string"', 'type': 'str'}),
+                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+                ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_kw_4(self):
+        decl = 'def force_kw(p1, p2, *, ls=[1], st="string", tup=(1, 2), di={"key": "value"}):'
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
+                ('p1', {'default': None, 'type': None}),
+                ('p2', {'default': None, 'type': None}),
+                ('ls', {'default': '[1]', 'type': 'list'}),
+                ('st', {'default': '"string"', 'type': 'str'}),
+                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+                ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        import pprint
+        pprint.pprint(result_params)
+        pprint.pprint(expected_params)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_kw_5(self):
+        decl = "def method_kw_only(*, ls=[1], st='string', tup=(1, 2), di={'key': 'value'}):"
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
+                ('ls', {'default': '[1]', 'type': 'list'}),
+                ('st', {'default': "'string'", 'type': 'str'}),
+                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+                ('di', {'default': "{'key': 'value'}", 'type': 'dict'})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_mixed_space(self):
+        decl = 'def method_kw_mixed_space(ls= [1 ], st ="string", tup= (1, 2), di ={"key": "value"}):'
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
+                ('ls', {'default': '[1 ]', 'type': 'list'}),
+                ('st', {'default': '"string"', 'type': 'str'}),
+                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+                ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_type(self):
+        decl = "def method_type(p1: str, p2: list) -> dict:"
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
                 ('p1', {'default': None, 'type': 'str'}),
-                ('p2', {'default': None, 'type': 'list'})]),
-             'dict'),
-            (OrderedDict([
+                ('p2', {'default': None, 'type': 'list'})])
+        expected_type = 'dict'
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
+
+    def test_expand(self):
+        decl = "def method_expand(*args, **kwargs):"
+        print("Decl Was:", decl)
+        expected_params = OrderedDict([
                 ('*args', {'default': None, 'type': None}),
-                ('**kwargs', {'default': None, 'type': None})]),
-             None),
-            (OrderedDict([
-                ('', {'default': None, 'type': None})]),
-             None)
-        ]
+                ('**kwargs', {'default': None, 'type': None})])
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
 
-        results = []
-        for decl in decls:
-            results.append(parse_utils.parse_function_declaration(decl))
-
-        self.assertEqual(results, expected)
+    def test_comment_after(self):
+        decl = "def comment_following():#a comment"
+        print("Decl Was:", decl)
+        expected_params = OrderedDict()
+        expected_type = None
+        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        self.assertEqual(result_params, expected_params)
+        self.assertEqual(result_type, expected_type)
 
     def test_return_kw_none(self):
         """Test the response when there is no return keyword"""
