@@ -17,8 +17,8 @@ public_version = '{0}'
 build_identifier = '+{1}-{2}'
 """.format(version.strip(), commits.strip(), chash.strip())
     with open(version_file, "w") as vf:
-        assert vf.write(version_text), len(version_text)
-except:
+        vf.write(version_text)
+except subprocess.CalledProcessError:
     # if we're not in source, check the _version.py file exists, and get the version from there
     assert path.exists(version_file)
     with open(version_file) as vf:
