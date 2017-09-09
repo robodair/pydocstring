@@ -64,7 +64,7 @@ class Document(object):
         self.all_decls = []
 
 
-    def find_all(self, pattern, flags=0, excludes=None):
+    def find_all(self, pattern, flags=0):
         """Return a list of tuples containing the start and end for non-overlapping matches in the
         document
         When using the ALL_DECL_RE pattern you'll want to use the re.MULTILINE flag, and when using
@@ -73,14 +73,11 @@ class Document(object):
         Args:
             pattern (str): Regex pattern to find
             flags (int): Flags to use for `pattern`
-            excludes (list): A list of tuples containing (pattern, flags). Matches for pattern
-                argument will not be returned if they overlap with one of the patterns in excludes
-                EXCEPT when the match from excludes is entirely within the match from pattern
-                TODO: Refactor this logic out into a separate method so this is just a find all - that's easy because this method is just making a few recursive calls anyway
 
         Returns:
-            list: of tuples, containing start and end indexes
+            list: List of tuples, containing start and end indexes
         """
+
         regex = re.compile(pattern, flags)
         initial_ranges = []
         for match in regex.finditer(self.source):
