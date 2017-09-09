@@ -4,6 +4,7 @@ import re
 import textwrap
 from collections import OrderedDict
 import ast
+import itertools
 
 def parse_function_declaration(declaration):
     """Parse function parameters into an OrderedDict of Parameters and the return type (if any)
@@ -47,8 +48,16 @@ def parse_function_declaration(declaration):
             param_default = param_segments[1].strip()
             try:
                 param_type = type(ast.literal_eval(param_default)).__name__
-            except:
-                pass # can't determine type, doesn't matter
+            except ValueError:
+                if (param_default.startswith('{') and param_default.endswith('}')):
+                    set_str = param_default
+                    olds, news = ['{', '}'] , ['[',']']
+                    for old, new in itertools.izip(olds, news):
+                        set_str = set_str.replace(old, new)
+                    try:
+                        param_type = type(set(ast.literal_eval(set_str))).__name__
+                    except ValueError:
+                        pass # can't determine type, doesn't matter
         else:
             param_segments = param.split(':', 1)
             if len(param_segments) > 1:
