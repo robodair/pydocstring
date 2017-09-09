@@ -102,3 +102,5 @@ ENV/
 
 # coverage
 cover/
+
+pydocstring/_version\.py
