@@ -3,7 +3,7 @@ import unittest
 import os
 import re
 
-from .. import document
+from pydocstring import document
 
 FIND_DECL_FILE = os.path.join(os.path.dirname(__file__), "resources", "find_declarations.py")
 

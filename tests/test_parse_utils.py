@@ -2,7 +2,7 @@
 
 import unittest
 from collections import OrderedDict
-from .. import parse_utils
+from pydocstring import parse_utils
 
 
 class TestParseUtils(unittest.TestCase):
