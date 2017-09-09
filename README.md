@@ -6,7 +6,7 @@
 
 Python package for autogenerating python docstrings
 
-The Idea is that this project can be wrapped by an editor extension to provide in-editor docstrings.
+The idea is that this project can be wrapped by an editor extension to provide in-editor docstrings.
 
 Development state: In progress, don't bother to attempt using it yet
 

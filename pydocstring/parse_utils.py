@@ -9,21 +9,23 @@ import itertools
 def parse_function_declaration(declaration):
     """Parse function parameters into an OrderedDict of Parameters and the return type (if any)
 
-    Args:
-        declaration: The function declaration (e.g. everything from 'def' to the final ':')
+    OrderedDict Structure:
 
-    Returns:
-        tuple: OrderedDict of parameters, and a string or None for return type
+    .. code-block:: python
 
-        OrderedDict Structure:
-        ```
         {
             "param_name": {
                 "default": "default value as a string",
                 "type": "parameter type as a string or None"
                 }
         }
-        ```
+
+    Args:
+        declaration: The function declaration (e.g. everything from 'def' to the final ':')
+
+    Returns:
+        tuple: OrderedDict of parameters, and a string or None for return type
+
     """
     # FIXME: This doesn't support recursive brackets e.g: param=((1, 2), (3, 4)), need better engine
     # but what we can do is split on = and make sure the trimmed first group is all alphanumeric
