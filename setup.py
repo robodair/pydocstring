@@ -52,4 +52,9 @@ setup(
     license='MIT',
     packages=find_packages(exclude=('tests')),
     classifiers=classifiers,
+    entry_points = {
+        'console_scripts': [
+            'pydocstring=pydocstring.cli:main',
+        ],
+    },
 )

@@ -10,3 +10,4 @@ API
    pydocstring.exc
    pydocstring.formatters.google
    pydocstring.parse_utils
+   pydocstring.cli

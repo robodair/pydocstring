@@ -14,7 +14,6 @@ Initial development nearly there
 ## TODO:
 
 - Autocompletion of docstrings for classes
-- Commandline entry point
 
 Why not just use `ast` and parse the file? This aims to be a cross-version docstring creator
 

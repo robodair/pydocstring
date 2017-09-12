@@ -10,6 +10,7 @@ Welcome to pydocstring's documentation!
    :maxdepth: 1
    :caption: Contents:
 
+   cli
    api
 
 
