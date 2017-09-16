@@ -9,6 +9,18 @@ pydocstring
 .. image:: https://readthedocs.org/projects/pydocstring/badge/?version=latest
     :target: https://pydocstring.readthedocs.io/en/latest/?badge=latest
 
+.. image:: https://img.shields.io/pypi/l/pydocstring.svg
+    :target: https://pypi.org/project/pydocstring/
+
+.. image:: https://img.shields.io/pypi/v/pydocstring.svg
+    :target: https://pypi.org/project/pydocstring/
+
+.. image:: https://img.shields.io/pypi/pyversions/pydocstring.svg
+    :target: https://pypi.org/project/pydocstring/
+
+.. image:: https://img.shields.io/pypi/status/pydocstring.svg
+    :target: https://pypi.org/project/pydocstring/
+
 
 Python package for autogenerating python docstrings
 
