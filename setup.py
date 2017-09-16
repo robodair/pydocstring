@@ -41,6 +41,8 @@ classifiers=[
     'Topic :: Software Development :: Documentation',
 ]
 
+with open(path.join(path.dirname(__file__), "README.rst")) as readme_file:
+    long_description = readme_file.read()
 
 setup(
     name='pydocstring',
@@ -48,7 +50,8 @@ setup(
     url='https://github.com/robodair/pydocstring',
     author='Alisdair Robertson',
     author_email='alisdair.w.robertson@gmail.com',
-    description=('Package providing autocompletion capabilities for python docstrings'),
+    description='Package providing autocompletion capabilities for python docstrings',
+    long_description=long_description,
     license='MIT',
     packages=find_packages(exclude=('tests')),
     classifiers=classifiers,
