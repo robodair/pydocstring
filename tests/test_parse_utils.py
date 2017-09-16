@@ -276,11 +276,11 @@ class TestParseUtils(unittest.TestCase):
         self.class_attr_override = 0
 '''
         result = parse_utils.parse_class_attributes(source)
-        self.assertEqual(sorted(result), sorted([('class_attr_1', '0'),
-                                      ('class_attr_2', '2'),
-                                      ('class_attr_override', '0'),
-                                      ('inst_attr_1', '1'),
-                                      ('inst_attr_2', '2')]))
+        self.assertEqual(sorted(result), sorted([('class_attr_1', '0', 'int'),
+                                      ('class_attr_2', '2', 'int'),
+                                      ('class_attr_override', '0', 'int'),
+                                      ('inst_attr_1', '1', 'int'),
+                                      ('inst_attr_2', '2', 'int')]))
 
     def test_parse_class_attributes_nested_indented(self):
         """Test class attributes are correctly garnered from a simple class"""
@@ -304,11 +304,11 @@ class TestParseUtils(unittest.TestCase):
                 self.class_attr_override = 0
 '''
         result = parse_utils.parse_class_attributes(source)
-        self.assertEqual(sorted(result), sorted([('class_attr_1', '0'),
-                                      ('class_attr_2', '2'),
-                                      ('class_attr_override', '0'),
-                                      ('inst_attr_1', '1'),
-                                      ('inst_attr_2', '2')]))
+        self.assertEqual(sorted(result), sorted([('class_attr_1', '0', 'int'),
+                                      ('class_attr_2', '2', 'int'),
+                                      ('class_attr_override', '0', 'int'),
+                                      ('inst_attr_1', '1', 'int'),
+                                      ('inst_attr_2', '2', 'int')]))
 
     def test_parse_class_attributes_ignored_nested_class(self):
         """Test class attributes from a nested class are ignored"""
@@ -332,27 +332,33 @@ class TestParseUtils(unittest.TestCase):
             self.class_attr_override = 0
 '''
         result = parse_utils.parse_class_attributes(source)
-        self.assertEqual(sorted(result), sorted([('class_attr_1', '0'),
-                                      ('class_attr_2', '2'),
-                                      ('class_attr_override', '0'),
-                                      ('inst_attr_1', '1'),
-                                      ('inst_attr_2', '2')]))
+        self.assertEqual(sorted(result), sorted([('class_attr_1', '0', 'int'),
+                                      ('class_attr_2', '2', 'int'),
+                                      ('class_attr_override', '0', 'int'),
+                                      ('inst_attr_1', '1', 'int'),
+                                      ('inst_attr_2', '2', 'int')]))
 
     def test_parse_module_attributes(self):
         """Test module attributes are identified and returned correctly"""
         source = \
             '''"""A Module Docstring"""
 CONST_MODULE_ATTR = "constant"
+CONST_MODULE_ATTR_2 = CONST_MODULE_ATTR + "2"
 print "a print statement"
 print("print with brackets")
 print 0 == 0
 module_attr_1 = 0
+module_attr_2 = 2 * module_attr_1
 # commented_module_attr = 2
 someothermodule.thing = 20
 '''
         result = parse_utils.parse_module_attributes(source)
-        self.assertEqual(sorted(result), sorted([("CONST_MODULE_ATTR", '"constant"'),
-                                      ("module_attr_1", "0")]))
+        self.assertEqual(sorted(result), sorted([
+            ("CONST_MODULE_ATTR", '"constant"', "str"),
+            ('CONST_MODULE_ATTR_2', 'CONST_MODULE_ATTR + "2"', None),
+            ("module_attr_1", "0", "int"),
+            ('module_attr_2', '2 * module_attr_1', None)
+            ]))
 
     def test_parse_module_attributes_none(self):
         """Test module attributes are identified and returned correctly, when there are none"""

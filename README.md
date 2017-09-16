@@ -6,15 +6,8 @@ Python package for autogenerating python docstrings
 
 [![Documentation Status](https://readthedocs.org/projects/pydocstring/badge/?version=latest)](https://pydocstring.readthedocs.io/en/latest/?badge=latest)
 
-The idea is that this project can be wrapped by an editor extension to provide in-editor docstrings.
+The idea is that this project can be wrapped by an editor extension to provide docstrings as autocompletion or in response to a shortcut.
 
 ## Development state:
-Initial development nearly there
+Ready for basic use - still only supports Google Style Docstrings
 
-## TODO:
-
-- Autocompletion of docstrings for classes
-
-Why not just use `ast` and parse the file? This aims to be a cross-version docstring creator
-
-Hopefully I don't need to write a full python parser

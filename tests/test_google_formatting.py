@@ -1,8 +1,12 @@
+"""
+Test simple formatting of google style docstrings
+"""
+
 import unittest
 from pydocstring.formatters import google
 from collections import OrderedDict
 
-class TestGoogleFormatting(unittest.TestCase):
+class TestGoogleFunctionFormatting(unittest.TestCase):
 
     def test_params(self):
         params = OrderedDict(
@@ -21,7 +25,7 @@ class TestGoogleFormatting(unittest.TestCase):
 
 
 Args:
-    p1:
+    p1 (TYPE):
     p2 (int):
 
 """
@@ -92,4 +96,38 @@ Returns:
 
 Raises:
     MyException: \n\n"""
+        self.assertEqual(docstring, expected)
+
+class TestGoogleClassFormatting(unittest.TestCase):
+
+    def test_class_attributes(self):
+        attributes = [
+            ("attr1", "3 * some_var", None),
+            ("attr2", "2", "int")
+        ]
+        docstring = google.class_docstring(attributes)
+
+        expected = """
+
+
+Attributes:
+    attr1 (TYPE): 3 * some_var
+    attr2 (int): 2\n\n"""
+        self.assertEqual(docstring, expected)
+
+class TestGoogleModuleFormatting(unittest.TestCase):
+
+    def test_module_attributes(self):
+        attributes = [
+            ("mattr1", "3 * some_var", None),
+            ("mattr2", "2", "int")
+        ]
+        docstring = google.module_docstring(attributes)
+
+        expected = """
+
+
+Attributes:
+    mattr1 (TYPE): 3 * some_var
+    mattr2 (int): 2\n\n"""
         self.assertEqual(docstring, expected)

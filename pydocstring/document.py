@@ -183,7 +183,7 @@ class Document(object):
         position = position if position else self.position
         decl = self.find_preceeding_declaration(position=position)
         if not decl:
-            return (position, position)
+            return position, position
         else:
             decl_text = self.get_range(*decl)
         # Would use space explicitly, but some heathens use tabs

@@ -9,6 +9,32 @@ from collections import OrderedDict
 import ast
 import itertools
 
+def _infer_type(expression):
+    """
+    Attempt to infer the type of an expression
+
+    Args:
+        expression (str): The expression
+
+    Returns:
+        str or None: the inferred type, or None if it could not be determined
+
+    """
+    exp_type = None
+    try:
+        exp_type = type(ast.literal_eval(expression)).__name__
+    except ValueError:
+        if (expression.startswith('{') and expression.endswith('}')):
+            set_str = expression
+            olds, news = ['{', '}'] , ['[',']']
+            for old, new in itertools.izip(olds, news):
+                set_str = set_str.replace(old, new)
+            try:
+                exp_type = type(set(ast.literal_eval(set_str))).__name__
+            except ValueError:
+                pass
+    return exp_type
+
 def parse_function_declaration(declaration):
     """Parse function parameters into an OrderedDict of Parameters and the return type (if any)
 
@@ -50,18 +76,7 @@ def parse_function_declaration(declaration):
         if len(param_segments) > 1:
             param_name = param_segments[0].strip()
             param_default = param_segments[1].strip()
-            try:
-                param_type = type(ast.literal_eval(param_default)).__name__
-            except ValueError:
-                if (param_default.startswith('{') and param_default.endswith('}')):
-                    set_str = param_default
-                    olds, news = ['{', '}'] , ['[',']']
-                    for old, new in itertools.izip(olds, news):
-                        set_str = set_str.replace(old, new)
-                    try:
-                        param_type = type(set(ast.literal_eval(set_str))).__name__
-                    except ValueError:
-                        pass # can't determine type, doesn't matter
+            param_type = _infer_type(param_default)
         else:
             param_segments = param.split(':', 1)
             if len(param_segments) > 1:
@@ -122,7 +137,7 @@ def parse_class_attributes(text):
         text: The text of a function
 
     Returns:
-        list of tuples: The attribute names and an expression following one of their assignments
+        list of tuples: The attribute name, expression, type following one of their assignments
     """
     dedent_text = textwrap.dedent(text)
     # Determine the indentation used in the class
@@ -136,7 +151,7 @@ def parse_class_attributes(text):
             matches[match.group(2)] = match.group(4)
         elif match.group(3): # instance variable
             matches[match.group(3)] = match.group(4)
-    matches_set = set([(key, matches[key]) for key in matches])
+    matches_set = set([(key, matches[key], _infer_type(matches[key])) for key in matches])
     return list(matches_set)
 
 def parse_module_attributes(text):
@@ -146,11 +161,11 @@ def parse_module_attributes(text):
         text: the text of the module
 
     Returns:
-        list of tuples: The attribute name and expression following a (module level) assignment
+        list of tuples: The attribute name, expression, type following a (module level) assignment
     """
     attrib_re = re.compile(r"^([A-Za-z0-9_]+)\s*=\s*(.*)", re.MULTILINE)
     matches = OrderedDict()
     for match in attrib_re.finditer(text):
         matches[match.group(1)] = match.group(2)
-    matches_set = set([(key, matches[key]) for key in matches])
+    matches_set = set([(key, matches[key], _infer_type(matches[key])) for key in matches])
     return list(matches_set)

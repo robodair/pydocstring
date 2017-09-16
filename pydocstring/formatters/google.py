@@ -5,7 +5,7 @@ Google Docstring Formatter
 
 def function_docstring(params, return_type, exceptions, return_statements):
     """
-    Format a google docstring
+    Format a google docstring for a function
 
     Args:
         params (OrderedDict): as returned by :py:func:`pydocstring.parse_utils.parse_function_declaration`
@@ -24,9 +24,10 @@ def function_docstring(params, return_type, exceptions, return_statements):
         docstring += "\n\nArgs:\n"
         for param_name in params:
             param = params[param_name]
-            param_type = " (" +param['type'] + ")" if param['type'] else ""
-            param_default = " default: `" + param['default'] + "`" if param['default'] else ""
-            param_str = "    {0}{1}:{2}\n".format(
+            param_type = param['type'] if param['type'] else "TYPE"
+            param_default = " default: `" + \
+                param['default'] + "`" if param['default'] else ""
+            param_str = "    {0} ({1}):{2}\n".format(
                 param_name, param_type, param_default)
             docstring += param_str
 
@@ -48,6 +49,62 @@ def function_docstring(params, return_type, exceptions, return_statements):
         docstring += "\n\nRaises:\n"
         for exception in exceptions:
             docstring += "    {0}: \n".format(exception)
+
+    docstring += "\n"
+    return docstring
+
+
+def class_docstring(attributes):
+    """
+    Format a google docstring for a class
+
+    Only accepts attributes, ``__init__`` method args can be documented on the ``__init__`` method
+
+    Args:
+        attributes (list of tuples): attribute names, expression and type (or None)
+
+    Returns:
+        str: The formatted docstring
+
+    """
+    docstring = "\n"
+
+    if attributes:
+        docstring += "\n\nAttributes:\n"
+        for attribute, expression, attr_type in attributes:
+            if not attr_type:
+                attr_type = "TYPE"
+            attr_str = "    {0} ({1}): {2}\n".format(
+                attribute, attr_type, expression)
+            docstring += attr_str
+
+    docstring += "\n"
+    return docstring
+
+
+def module_docstring(attributes):
+    """
+    Format a google docstring for a module
+
+    Only accepts attributes, ``__init__`` method args can be documented on the ``__init__`` method
+
+    Args:
+        attributes (list of tuples): attribute names, expression and type (or None)
+
+    Returns:
+        str: The formatted docstring
+
+    """
+    docstring = "\n"
+
+    if attributes:
+        docstring += "\n\nAttributes:\n"
+        for attribute, expression, attr_type in attributes:
+            if not attr_type:
+                attr_type = "TYPE"
+            attr_str = "    {0} ({1}): {2}\n".format(
+                attribute, attr_type, expression)
+            docstring += attr_str
 
     docstring += "\n"
     return docstring
