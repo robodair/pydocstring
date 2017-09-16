@@ -26,7 +26,7 @@ except subprocess.CalledProcessError:
     version = re.match(r"public_version = '(.*)'", version_text).group(1)
 
 classifiers=[
-    'Development Status :: 2 - Pre-Alpha',
+    'Development Status :: 3 - Alpha',
     'Environment :: Console',
     'Environment :: Plugins',
     'Environment :: Win32 (MS Windows)',
