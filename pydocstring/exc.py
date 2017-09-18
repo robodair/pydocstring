@@ -2,11 +2,13 @@
 pydocstring exceptions
 """
 
+
 class InvalidFormatter(Exception):
     """
     Provided name of formatter is not one supported
     """
     pass
+
 
 class UnknownDeclaration(Exception):
     """

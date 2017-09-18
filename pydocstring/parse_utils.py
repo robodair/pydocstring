@@ -9,6 +9,7 @@ from collections import OrderedDict
 import ast
 import itertools
 
+
 def _infer_type(expression):
     """
     Attempt to infer the type of an expression
@@ -26,7 +27,7 @@ def _infer_type(expression):
     except ValueError:
         if (expression.startswith('{') and expression.endswith('}')):
             set_str = expression
-            olds, news = ['{', '}'] , ['[',']']
+            olds, news = ['{', '}'], ['[', ']']
             for old, new in itertools.izip(olds, news):
                 set_str = set_str.replace(old, new)
             try:
@@ -34,6 +35,7 @@ def _infer_type(expression):
             except ValueError:
                 pass
     return exp_type
+
 
 def parse_function_declaration(declaration):
     """Parse function parameters into an OrderedDict of Parameters and the return type (if any)
@@ -57,12 +59,16 @@ def parse_function_declaration(declaration):
 
     """
     # FIXME: This doesn't support recursive brackets e.g: param=((1, 2), (3, 4)), need better engine
-    # but what we can do is split on = and make sure the trimmed first group is all alphanumeric
-    param_sep = re.compile(r",(?![^({[]*[]})])") # match commas not inside brackets
-    params_re = re.compile(r"\((.*)\)") # everything between outermost brackets
-    params_str = params_re.search(declaration).group(1) # inside brackets
+    # but what we can do is split on = and make sure the trimmed first group
+    # is all alphanumeric
+    # match commas not inside brackets
+    param_sep = re.compile(r",(?![^({[]*[]})])")
+    # everything between outermost brackets
+    params_re = re.compile(r"\((.*)\)")
+    params_str = params_re.search(declaration).group(1)  # inside brackets
     params_str = "" if not params_str else params_str.strip()
-    params_list = [x for x in param_sep.split(params_str) if x.strip() != "*" and x.strip()]
+    params_list = [x for x in param_sep.split(
+        params_str) if x.strip() != "*" and x.strip()]
 
     param_dict = OrderedDict()
 
@@ -72,7 +78,8 @@ def parse_function_declaration(declaration):
         param_type = None
 
         paramstr = param.strip()
-        param_segments = param.split('=', 1) # split only on the first occurrence of '='
+        # split only on the first occurrence of '='
+        param_segments = param.split('=', 1)
         if len(param_segments) > 1:
             param_name = param_segments[0].strip()
             param_default = param_segments[1].strip()
@@ -97,6 +104,7 @@ def parse_function_declaration(declaration):
         return_type = return_type_match.group(1)
 
     return param_dict, return_type
+
 
 def parse_return_keyword(text):
     """Scan a function's code to look for how it returns, and what follows the return or yield
@@ -141,18 +149,21 @@ def parse_class_attributes(text):
     """
     dedent_text = textwrap.dedent(text)
     # Determine the indentation used in the class
-    indentations = [line[:len(line) - len(line.lstrip())] for line in dedent_text.splitlines()]
+    indentations = [line[:len(line) - len(line.lstrip())]
+                    for line in dedent_text.splitlines()]
     indent = min([indent for indent in indentations if indent])
     execp_re = re.compile(r"^(^{0}([A-Za-z0-9_]+)|^{1}self\.([A-Za-z0-9_]+))\s*=\s*(.*)"
                           .format(indent, indent * 2), re.MULTILINE)
     matches = OrderedDict()
     for match in execp_re.finditer(dedent_text):
-        if match.group(2): # class variable
+        if match.group(2):  # class variable
             matches[match.group(2)] = match.group(4)
-        elif match.group(3): # instance variable
+        elif match.group(3):  # instance variable
             matches[match.group(3)] = match.group(4)
-    matches_set = set([(key, matches[key], _infer_type(matches[key])) for key in matches])
+    matches_set = set([(key, matches[key], _infer_type(matches[key]))
+                       for key in matches])
     return list(matches_set)
+
 
 def parse_module_attributes(text):
     """Scan a module to find all of it's attributes
@@ -167,5 +178,6 @@ def parse_module_attributes(text):
     matches = OrderedDict()
     for match in attrib_re.finditer(text):
         matches[match.group(1)] = match.group(2)
-    matches_set = set([(key, matches[key], _infer_type(matches[key])) for key in matches])
+    matches_set = set([(key, matches[key], _infer_type(matches[key]))
+                       for key in matches])
     return list(matches_set)

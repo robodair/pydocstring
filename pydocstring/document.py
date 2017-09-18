@@ -44,6 +44,7 @@ FUNC_DECL_RE = r"^[^\S\n]*{0}\s*:".format(__FUNC_RE)
 PYTHON_STRINGS = r"(\"\"\"[\s\S]*?\"\"\")|(\"[\s\S]*?\")|(\'\'\'[\s\S]*?\'\'\')|(\'[\s\S]*?\')"
 PYTHON_COMMENTS = r"#.*"
 
+
 class Document(object):
     """Represents the source of a document provides useful methods like find_all and the ability
     to retrieve ranges of text
@@ -63,7 +64,6 @@ class Document(object):
         self.source = source
         self.position = position
         self.all_decls = []
-
 
     def find_all(self, pattern, flags=0):
         """Return a list of tuples containing the start and end for non-overlapping matches in the
@@ -108,7 +108,7 @@ class Document(object):
                 for exc in exclude_ranges:
                     if overlap(min(rng), max(rng), min(exc), max(exc)) > 0:
                         if max(rng) > max(exc) and min(rng) < min(exc):
-                            continue # str is contained within the declaration - probably a default
+                            continue  # str is contained within the declaration - probably a default
                         raise StopIteration()
                 final_ranges.append(rng)
             except StopIteration:
@@ -166,7 +166,6 @@ class Document(object):
             str: the text on the given range
         """
         return self.source[start:end]
-
 
     def get_block(self, position=None):
         """Get the code block `position` is in (start declaration to the next declaration at the

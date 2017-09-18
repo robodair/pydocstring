@@ -11,7 +11,8 @@ from pydocstring.formatters import google
 
 __version__ = _version.public_version
 
-def generate_docstring(document, position=0, formatter="Google"): # pragma: no cover
+
+def generate_docstring(document, position=0, formatter="Google"):  # pragma: no cover
     """Generate a docstring
 
     Args:
