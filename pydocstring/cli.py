@@ -24,10 +24,12 @@ def main():
     """
     CLI entrypoint
     """
-    parser = argparse.ArgumentParser("pydocstring")
+    parser = argparse.ArgumentParser(prog="pydocstring")
     parser.add_argument("string", help="The Python document to process")
     parser.add_argument("position", nargs="?", type=int,
                         help="Position of the cursor in the document, defaults to the end")
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {0}'.format(pydocstring.__version__))
     args = parser.parse_args()
 
     position = args.position if args.position else len(args.string)
