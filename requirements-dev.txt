@@ -5,3 +5,4 @@ Sphinx==1.6.3
 pylint==1.7.2
 sphinx_rtd_theme==0.2.4
 sphinxcontrib-napoleon==0.6.1
+twine==1.9.1
