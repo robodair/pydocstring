@@ -5,7 +5,9 @@ import re
 
 from pydocstring import document
 
-FIND_DECL_FILE = os.path.join(os.path.dirname(__file__), "resources", "find_declarations.py")
+FIND_DECL_FILE = os.path.join(os.path.dirname(
+    __file__), "resources", "find_declarations.py")
+
 
 class TestDocument(unittest.TestCase):
     """Test functionality of the Document class"""
@@ -18,7 +20,7 @@ class TestDocument(unittest.TestCase):
             (35, 39)
         ]
         test_source = \
-"""aaaaaaaaaaa
+            """aaaaaaaaaaa
 nothing
 more nothing
   aaaa
@@ -35,7 +37,7 @@ more nothing
             (38, 42)
         ]
         test_source = \
-"""aaaaaaaaaaa
+            """aaaaaaaaaaa
 aa
 nothing
 more nothing
@@ -68,9 +70,9 @@ more nothing
         with open(FIND_DECL_FILE) as content_file:
             source = content_file.read()
 
-        matches = document.Document(source).find_all(document.ALL_DECL_RE, flags=re.MULTILINE)
+        matches = document.Document(source).find_all(document.ALL_DECL_RE,
+                                                     flags=re.MULTILINE)
         self.assertEqual(matches, expected)
-
 
     def test_find_declarations(self):
         """Test finding declarations in a real file, excluding inside comments and strings"""
@@ -83,7 +85,8 @@ more nothing
             (315, 342),
             (377, 426),
             # (480, 505), Not the match in a string, and regex avoids
-            # the declaration in the comment anyway (only whitespace before the decl allowed)
+            # the declaration in the comment anyway (only whitespace before the
+            # decl allowed)
             (559, 645),
             (726, 801),
             (866, 950),
@@ -100,7 +103,6 @@ more nothing
 
         self.assertEqual(matches, expected)
 
-
     def test_find_preceeding_start(self):
         """Test preceeding declaration returns None at the start of the file"""
         with open(FIND_DECL_FILE) as content_file:
@@ -108,7 +110,6 @@ more nothing
         doc = document.Document(source, position=0)
         preceeding = doc.find_preceeding_declaration()
         self.assertEqual(preceeding, None)
-
 
     def test_find_preceeding_middle_after(self):
         """Test preceeding declaration correct in the middle of the file, after a declaration"""
@@ -118,7 +119,6 @@ more nothing
         preceeding = doc.find_preceeding_declaration()
         self.assertEqual(preceeding, (559, 645))
 
-
     def test_find_preceeding_middle_inside(self):
         """Test preceeding declaration correct in the middle of the file, inside a declaration"""
         with open(FIND_DECL_FILE) as content_file:
@@ -126,7 +126,6 @@ more nothing
         doc = document.Document(source, position=600)
         preceeding = doc.find_preceeding_declaration()
         self.assertEqual(preceeding, (559, 645))
-
 
     def test_find_next_start(self):
         """Test next declaration returns None at the end of the file"""
@@ -136,7 +135,6 @@ more nothing
         nxt = doc.find_next_declaration()
         self.assertEqual(nxt, None)
 
-
     def test_find_next_middle_after(self):
         """Test next declaration correct in the middle of the file, after a declaration"""
         with open(FIND_DECL_FILE) as content_file:
@@ -144,7 +142,6 @@ more nothing
         doc = document.Document(source, position=650)
         nxt = doc.find_next_declaration()
         self.assertEqual(nxt, (726, 801))
-
 
     def test_find_next_middle_inside(self):
         """Test next declaration correct in the middle of the file, inside a declaration"""
@@ -154,7 +151,6 @@ more nothing
         nxt = doc.find_next_declaration()
         self.assertEqual(nxt, (726, 801))
 
-
     def test_get_block_middle(self):
         """Test getting the block the cursor is currently in"""
         with open(FIND_DECL_FILE) as content_file:
@@ -163,13 +159,12 @@ more nothing
         block = doc.get_block()
 
         expected = \
-'''def method_ag_kw_normal(p1, p2, ls=[1], st="string", tup=(1, 2), di={"key", "value"}):
+            '''def method_ag_kw_normal(p1, p2, ls=[1], st="string", tup=(1, 2), di={"key", "value"}):
     pass
 
 # method with keyword args of all types (no spaces) and single quotes
 '''
         self.assertEqual(doc.get_range(*block), expected)
-
 
     def test_get_block_end(self):
         """Test getting the block the cursor is currently in, last method in the file"""
@@ -179,8 +174,7 @@ more nothing
         block = doc.get_block()
 
         expected = \
-'''def comment_following(): # comment
+            '''def comment_following(): # comment
     pass
 '''
         self.assertEqual(doc.get_range(*block), expected)
-

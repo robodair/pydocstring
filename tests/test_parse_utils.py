@@ -13,7 +13,8 @@ class TestParseUtils(unittest.TestCase):
         print("Decl Was:", decl)
         expected_params = OrderedDict()
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -21,10 +22,11 @@ class TestParseUtils(unittest.TestCase):
         decl = "def method_params(p1, p2):"
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('p1', {'default': None, 'type': None}),
-                ('p2', {'default': None, 'type': None})])
+            ('p1', {'default': None, 'type': None}),
+            ('p2', {'default': None, 'type': None})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -32,11 +34,12 @@ class TestParseUtils(unittest.TestCase):
         decl = "    def __init__(self, c1, c2: int):"
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('self', {'default': None, 'type': None}),
-                ('c1', {'default': None, 'type': None}),
-                ('c2', {'default': None, 'type': 'int'})])
+            ('self', {'default': None, 'type': None}),
+            ('c1', {'default': None, 'type': None}),
+            ('c2', {'default': None, 'type': 'int'})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -44,9 +47,10 @@ class TestParseUtils(unittest.TestCase):
         decl = "    def class_method(self):"
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('self', {'default': None, 'type': None})])
+            ('self', {'default': None, 'type': None})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -55,10 +59,11 @@ class TestParseUtils(unittest.TestCase):
                         param2):"
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('param1', {'default': None, 'type': None}),
-                ('param2', {'default': None, 'type': None})])
+            ('param1', {'default': None, 'type': None}),
+            ('param2', {'default': None, 'type': None})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -66,14 +71,15 @@ class TestParseUtils(unittest.TestCase):
         decl = 'def method_ag_kw_normal(p1, p2, ls=[1], st="string", tup=(1, 2), di={"key": "value"}):'
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('p1', {'default': None, 'type': None}),
-                ('p2', {'default': None, 'type': None}),
-                ('ls', {'default': '[1]', 'type': 'list'}),
-                ('st', {'default': '"string"', 'type': 'str'}),
-                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
-                ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
+            ('p1', {'default': None, 'type': None}),
+            ('p2', {'default': None, 'type': None}),
+            ('ls', {'default': '[1]', 'type': 'list'}),
+            ('st', {'default': '"string"', 'type': 'str'}),
+            ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+            ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -81,12 +87,13 @@ class TestParseUtils(unittest.TestCase):
         decl = "def method_kw_normal(ls=[1], st='string', tup=(1, 2), se={'one', 'two'}):"
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('ls', {'default': '[1]', 'type': 'list'}),
-                ('st', {'default': "'string'", 'type': 'str'}),
-                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
-                ('se', {'default': "{'one', 'two'}", 'type': 'set'})])
+            ('ls', {'default': '[1]', 'type': 'list'}),
+            ('st', {'default': "'string'", 'type': 'str'}),
+            ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+            ('se', {'default': "{'one', 'two'}", 'type': 'set'})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -94,12 +101,13 @@ class TestParseUtils(unittest.TestCase):
         decl = 'def method_kw_space(ls = [ 1 ], st = "string", tup = (1, 2), di = {"key": "value"}):'
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('ls', {'default': '[ 1 ]', 'type': 'list'}),
-                ('st', {'default': '"string"', 'type': 'str'}),
-                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
-                ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
+            ('ls', {'default': '[ 1 ]', 'type': 'list'}),
+            ('st', {'default': '"string"', 'type': 'str'}),
+            ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+            ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -107,14 +115,15 @@ class TestParseUtils(unittest.TestCase):
         decl = 'def force_kw(p1, p2, *, ls=[1], st="string", tup=(1, 2), di={"key": "value"}):'
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('p1', {'default': None, 'type': None}),
-                ('p2', {'default': None, 'type': None}),
-                ('ls', {'default': '[1]', 'type': 'list'}),
-                ('st', {'default': '"string"', 'type': 'str'}),
-                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
-                ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
+            ('p1', {'default': None, 'type': None}),
+            ('p2', {'default': None, 'type': None}),
+            ('ls', {'default': '[1]', 'type': 'list'}),
+            ('st', {'default': '"string"', 'type': 'str'}),
+            ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+            ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         import pprint
         pprint.pprint(result_params)
         pprint.pprint(expected_params)
@@ -125,12 +134,13 @@ class TestParseUtils(unittest.TestCase):
         decl = "def method_kw_only(*, ls=[1], st='string', tup=(1, 2), di={'key': 'value'}):"
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('ls', {'default': '[1]', 'type': 'list'}),
-                ('st', {'default': "'string'", 'type': 'str'}),
-                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
-                ('di', {'default': "{'key': 'value'}", 'type': 'dict'})])
+            ('ls', {'default': '[1]', 'type': 'list'}),
+            ('st', {'default': "'string'", 'type': 'str'}),
+            ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+            ('di', {'default': "{'key': 'value'}", 'type': 'dict'})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -138,12 +148,13 @@ class TestParseUtils(unittest.TestCase):
         decl = 'def method_kw_mixed_space(ls= [1 ], st ="string", tup= (1, 2), di ={"key": "value"}):'
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('ls', {'default': '[1 ]', 'type': 'list'}),
-                ('st', {'default': '"string"', 'type': 'str'}),
-                ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
-                ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
+            ('ls', {'default': '[1 ]', 'type': 'list'}),
+            ('st', {'default': '"string"', 'type': 'str'}),
+            ('tup', {'default': '(1, 2)', 'type': 'tuple'}),
+            ('di', {'default': '{"key": "value"}', 'type': 'dict'})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -151,10 +162,11 @@ class TestParseUtils(unittest.TestCase):
         decl = "def method_type(p1: str, p2: list) -> dict:"
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('p1', {'default': None, 'type': 'str'}),
-                ('p2', {'default': None, 'type': 'list'})])
+            ('p1', {'default': None, 'type': 'str'}),
+            ('p2', {'default': None, 'type': 'list'})])
         expected_type = 'dict'
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -162,10 +174,11 @@ class TestParseUtils(unittest.TestCase):
         decl = "def method_expand(*args, **kwargs):"
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-                ('*args', {'default': None, 'type': None}),
-                ('**kwargs', {'default': None, 'type': None})])
+            ('*args', {'default': None, 'type': None}),
+            ('**kwargs', {'default': None, 'type': None})])
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -174,7 +187,8 @@ class TestParseUtils(unittest.TestCase):
         print("Decl Was:", decl)
         expected_params = OrderedDict()
         expected_type = None
-        result_params, result_type = parse_utils.parse_function_declaration(decl)
+        result_params, result_type = parse_utils.parse_function_declaration(
+            decl)
         self.assertEqual(result_params, expected_params)
         self.assertEqual(result_type, expected_type)
 
@@ -246,7 +260,8 @@ class TestParseUtils(unittest.TestCase):
          yield num+7
 '''
         result = parse_utils.parse_return_keyword(source)
-        self.assertEqual(sorted(result), sorted([('yield', 'num'), ('yield', 'num+7')]))
+        self.assertEqual(sorted(result), sorted(
+            [('yield', 'num'), ('yield', 'num+7')]))
 
     def test_parse_exceptions(self):
         """Test that exceptions are found in functions"""
@@ -277,10 +292,10 @@ class TestParseUtils(unittest.TestCase):
 '''
         result = parse_utils.parse_class_attributes(source)
         self.assertEqual(sorted(result), sorted([('class_attr_1', '0', 'int'),
-                                      ('class_attr_2', '2', 'int'),
-                                      ('class_attr_override', '0', 'int'),
-                                      ('inst_attr_1', '1', 'int'),
-                                      ('inst_attr_2', '2', 'int')]))
+                                                 ('class_attr_2', '2', 'int'),
+                                                 ('class_attr_override', '0', 'int'),
+                                                 ('inst_attr_1', '1', 'int'),
+                                                 ('inst_attr_2', '2', 'int')]))
 
     def test_parse_class_attributes_nested_indented(self):
         """Test class attributes are correctly garnered from a simple class"""
@@ -305,10 +320,10 @@ class TestParseUtils(unittest.TestCase):
 '''
         result = parse_utils.parse_class_attributes(source)
         self.assertEqual(sorted(result), sorted([('class_attr_1', '0', 'int'),
-                                      ('class_attr_2', '2', 'int'),
-                                      ('class_attr_override', '0', 'int'),
-                                      ('inst_attr_1', '1', 'int'),
-                                      ('inst_attr_2', '2', 'int')]))
+                                                 ('class_attr_2', '2', 'int'),
+                                                 ('class_attr_override', '0', 'int'),
+                                                 ('inst_attr_1', '1', 'int'),
+                                                 ('inst_attr_2', '2', 'int')]))
 
     def test_parse_class_attributes_ignored_nested_class(self):
         """Test class attributes from a nested class are ignored"""
@@ -333,10 +348,10 @@ class TestParseUtils(unittest.TestCase):
 '''
         result = parse_utils.parse_class_attributes(source)
         self.assertEqual(sorted(result), sorted([('class_attr_1', '0', 'int'),
-                                      ('class_attr_2', '2', 'int'),
-                                      ('class_attr_override', '0', 'int'),
-                                      ('inst_attr_1', '1', 'int'),
-                                      ('inst_attr_2', '2', 'int')]))
+                                                 ('class_attr_2', '2', 'int'),
+                                                 ('class_attr_override', '0', 'int'),
+                                                 ('inst_attr_1', '1', 'int'),
+                                                 ('inst_attr_2', '2', 'int')]))
 
     def test_parse_module_attributes(self):
         """Test module attributes are identified and returned correctly"""
@@ -358,7 +373,7 @@ someothermodule.thing = 20
             ('CONST_MODULE_ATTR_2', 'CONST_MODULE_ATTR + "2"', None),
             ("module_attr_1", "0", "int"),
             ('module_attr_2', '2 * module_attr_1', None)
-            ]))
+        ]))
 
     def test_parse_module_attributes_none(self):
         """Test module attributes are identified and returned correctly, when there are none"""

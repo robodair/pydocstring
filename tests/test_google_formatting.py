@@ -6,18 +6,25 @@ import unittest
 from pydocstring.formatters import google
 from collections import OrderedDict
 
+
 class TestGoogleFunctionFormatting(unittest.TestCase):
 
     def test_params(self):
         params = OrderedDict(
-            [("p1", {
-                "default": None,
-                "type": None
-            }),
-            ("p2", {
-                "default": None,
-                "type": "int"
-            })]
+            [
+                ("p1", {
+                    "default": None,
+                    "type": None
+                }),
+                ("p2", {
+                    "default": None,
+                    "type": "int"
+                }),
+                ("p3", {
+                    "default": "2",
+                    "type": "int"
+                })
+            ]
         )
         docstring = google.function_docstring(params, None, None, None)
 
@@ -27,6 +34,7 @@ class TestGoogleFunctionFormatting(unittest.TestCase):
 Args:
     p1 (TYPE):
     p2 (int):
+    p3 (int): default: ``2``
 
 """
         self.assertEqual(docstring, expected)
@@ -52,7 +60,8 @@ Returns:
         self.assertEqual(docstring, expected)
 
     def test_return_type_and_statement(self):
-        docstring = google.function_docstring(None, "int", None, [("return", "var1")])
+        docstring = google.function_docstring(
+            None, "int", None, [("return", "var1")])
 
         expected = """
 
@@ -63,9 +72,9 @@ Returns:
 """
         self.assertEqual(docstring, expected)
 
-
     def test_yields_statement(self):
-        docstring = google.function_docstring(None, None, None, [("yield", "var1")])
+        docstring = google.function_docstring(
+            None, None, None, [("yield", "var1")])
 
         expected = """
 
@@ -78,7 +87,8 @@ Yields:
         self.assertEqual(docstring, expected)
 
     def test_returns_statement(self):
-        docstring = google.function_docstring(None, None, None, [("returns", "var1")])
+        docstring = google.function_docstring(
+            None, None, None, [("returns", "var1")])
 
         expected = """
 
@@ -89,7 +99,8 @@ Returns:
 """
 
     def test_exceptions(self):
-        docstring = google.function_docstring(None, None, ["MyException"], None)
+        docstring = google.function_docstring(
+            None, None, ["MyException"], None)
 
         expected = """
 
@@ -97,6 +108,7 @@ Returns:
 Raises:
     MyException: \n\n"""
         self.assertEqual(docstring, expected)
+
 
 class TestGoogleClassFormatting(unittest.TestCase):
 
@@ -114,6 +126,7 @@ Attributes:
     attr1 (TYPE): 3 * some_var
     attr2 (int): 2\n\n"""
         self.assertEqual(docstring, expected)
+
 
 class TestGoogleModuleFormatting(unittest.TestCase):
 

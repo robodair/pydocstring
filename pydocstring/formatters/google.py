@@ -25,8 +25,8 @@ def function_docstring(params, return_type, exceptions, return_statements):
         for param_name in params:
             param = params[param_name]
             param_type = param['type'] if param['type'] else "TYPE"
-            param_default = " default: `" + \
-                param['default'] + "`" if param['default'] else ""
+            param_default = " default: ``" + \
+                param['default'] + "``" if param['default'] else ""
             param_str = "    {0} ({1}):{2}\n".format(
                 param_name, param_type, param_default)
             docstring += param_str
