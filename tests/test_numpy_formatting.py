@@ -43,6 +43,45 @@ p3 : int
 """
         self.assertEqual(docstring, expected)
 
+    def test_params_and_returns(self):
+        params = OrderedDict(
+            [
+                ("p1", {
+                    "default": None,
+                    "type": None
+                }),
+                ("p2", {
+                    "default": None,
+                    "type": "int"
+                }),
+                ("p3", {
+                    "default": "2",
+                    "type": "int"
+                })
+            ]
+        )
+        docstring = numpy.function_docstring(params, "int", None, None)
+
+        expected = """
+
+
+Parameters
+----------
+p1 : TYPE
+    \n\
+p2 : int
+    \n\
+p3 : int
+    default: ``2``
+
+Returns
+-------
+int
+    \n\
+
+"""
+        self.assertEqual(docstring, expected)
+
     def test_return_type(self):
         docstring = numpy.function_docstring(None, "int", None, None)
 

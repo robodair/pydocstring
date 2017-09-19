@@ -18,10 +18,10 @@ def function_docstring(params, return_type, exceptions, return_statements):
         str: The formatted docstring
     """
 
-    docstring = "\n"
+    docstring = "\n\n"
 
     if params:
-        docstring += "\n\nParameters\n----------\n"
+        docstring += "\nParameters\n----------\n"
         for param_name in params:
             param = params[param_name]
             param_type = param['type'] if param['type'] else "TYPE"
@@ -32,25 +32,26 @@ def function_docstring(params, return_type, exceptions, return_statements):
             docstring += param_str
 
     if return_type and return_statements:
-        docstring += "\n\nReturns\n-------\n"
+        docstring += "\nReturns\n-------\n"
         docstring += "{0}\n    {1}\n".format(return_type,
                                              return_statements[0][1])
     elif return_type:
-        docstring += "\n\nReturns\n-------\n"
+        docstring += "\nReturns\n-------\n"
         docstring += "{0}\n    \n".format(return_type)
     elif return_statements:
         if return_statements[0][0] == "yield":
-            docstring += "\n\nYields\n------\n"
+            docstring += "\nYields\n------\n"
         else:
-            docstring += "\n\nReturns\n-------\n"
+            docstring += "\nReturns\n-------\n"
         docstring += "{0}\n    {1}\n".format("TYPE", return_statements[0][1])
 
     if exceptions:
-        docstring += "\n\nRaises\n------\n"
+        docstring += "\nRaises\n------\n"
         for exception in exceptions:
             docstring += "{0}\n    \n".format(exception)
 
-    docstring += "\n"
+    if docstring != "\n\n":
+        docstring += "\n"
     return docstring
 
 
