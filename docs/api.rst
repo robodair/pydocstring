@@ -1,6 +1,8 @@
 API
 ===
 
+If you're looking to use this in an editor you're probably looking for :py:func:`pydocstring.generate_docstring`
+
 .. autosummary::
    :toctree: api
    :template: module.rst
@@ -9,5 +11,7 @@ API
    pydocstring.document
    pydocstring.exc
    pydocstring.formatters.google
+   pydocstring.formatters.numpy
+   pydocstring.formatters.reST
    pydocstring.parse_utils
    pydocstring.cli

@@ -6,6 +6,8 @@
 Welcome to pydocstring's documentation!
 ===============================================
 
+Using pydocstring is really simple, just check out the CLI and API.
+
 .. toctree::
    :maxdepth: 1
    :caption: Contents:

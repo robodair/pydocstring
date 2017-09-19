@@ -1,4 +1,4 @@
-pydocstring CLI
-===============
+CLI
+===
 
 .. automodule:: pydocstring.cli

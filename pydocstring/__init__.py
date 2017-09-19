@@ -1,5 +1,5 @@
 """
-Python package for autogeneration of docstrings
+Top level API - all you need to integrate with an editor, just call :py:func:`pydocstring.generate_docstring` with the source code and the position of your cursor.
 """
 
 from pydocstring import _version
@@ -12,22 +12,20 @@ from pydocstring.formatters import google, numpy, reST
 __version__ = _version.public_version
 
 
-def generate_docstring(source, position=0, formatter="Google"):  # pragma: no cover
+def generate_docstring(source, position=0, formatter="google"):  # pragma: no cover
     """Generate a docstring
 
     Args:
        source (str): the text of the source
        position: (int): the position of the cursor in the source
-       formatter (str): the format of the docstring choose from; `["Google"]`
-           (currently only google docstring supported)
+       formatter (str): the format of the docstring choose from google, numpy, reST.
 
     Raises:
-        pydocstring.exec.InvalidFormatter: If the value provided to `formatter` is not a supported
+        exc.InvalidFormatter: If the value provided to `formatter` is not a supported
             formatter name
 
     Returns:
-       str or None: The contents of the docstring, excluding quotation marks, or None, if one could
-           not be generated
+       str or None: docstring, excluding quotation marks, or None, if one could not be generated
     """
     formatter = formatter.lower()
 
