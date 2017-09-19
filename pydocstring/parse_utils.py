@@ -38,7 +38,9 @@ def _infer_type(expression):
 
 
 def parse_function_declaration(declaration):
-    """Parse function parameters into an OrderedDict of Parameters and the return type (if any)
+    """
+    Parse function parameters into an OrderedDict of Parameters and the return type (if any)
+    parameters that are the first parameter and are called 'cls' or 'self' are ignored.
 
     OrderedDict Structure:
 
@@ -72,7 +74,7 @@ def parse_function_declaration(declaration):
 
     param_dict = OrderedDict()
 
-    for param in params_list:
+    for index, param in enumerate(params_list):
         param_default = None
         param_name = None
         param_type = None
@@ -91,6 +93,8 @@ def parse_function_declaration(declaration):
                 param_type = param_segments[1].strip()
             else:
                 param_name = param.strip()
+        if param_name in ['self', 'cls'] and index == 0:
+            continue
         param_dict[param_name] = {
             "default": param_default,
             "type": param_type

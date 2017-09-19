@@ -34,7 +34,6 @@ class TestParseUtils(unittest.TestCase):
         decl = "    def __init__(self, c1, c2: int):"
         print("Decl Was:", decl)
         expected_params = OrderedDict([
-            ('self', {'default': None, 'type': None}),
             ('c1', {'default': None, 'type': None}),
             ('c2', {'default': None, 'type': 'int'})])
         expected_type = None
@@ -46,8 +45,7 @@ class TestParseUtils(unittest.TestCase):
     def test_class_method(self):
         decl = "    def class_method(self):"
         print("Decl Was:", decl)
-        expected_params = OrderedDict([
-            ('self', {'default': None, 'type': None})])
+        expected_params = OrderedDict([])
         expected_type = None
         result_params, result_type = parse_utils.parse_function_declaration(
             decl)
