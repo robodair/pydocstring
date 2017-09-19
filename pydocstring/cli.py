@@ -4,17 +4,22 @@ pydocstring CLI provides entrypoints for CLI commands
 Currently only the ``pydocstring`` command is supported
 
 To use pydocstring from the command line you call ``pydocstring`` with the source, and optionally
-the position of the cursor within that source.
+the position of the cursor within that source (defaults to the end).
 
-You may also want to provide
+Note that pydocstring doesn't insert docstrings in place (yet), as it's designed for editor
+integration.
+It prints out the generated docstring for the scope the given cursor position is in.
+
+You may also want to provide the ``-f`` flag with the formatter you want to use.
 
 .. code-block:: text
 
-    usage: pydocstring [-h] [-f {google,numpy,reST}] [--version] string [position]
+    usage: pydocstring [-h] [-f {google,numpy,reST}] [--version] source [position]
 
     positional arguments:
-    string                The Python document to process
-    position              Position of the cursor in the document, defaults to the end
+    source                Source code to process, or the path to a file
+    position              Position of the cursor in the document, defaults to
+                            the end
 
     optional arguments:
     -h, --help            show this help message and exit
@@ -25,6 +30,7 @@ You may also want to provide
 """
 from __future__ import print_function
 import sys
+import os
 import argparse
 import pydocstring
 
@@ -36,7 +42,7 @@ def main():
     parser = argparse.ArgumentParser(prog="pydocstring")
     parser.add_argument("source",
                         type=str,
-                        help="The Python document to process")
+                        help="Source code to process, or the path to a file")
     parser.add_argument("position",
                         nargs="?",
                         type=int,
@@ -50,8 +56,13 @@ def main():
                         action='version',
                         version='%(prog)s {0}'.format(pydocstring.__version__))
     args = parser.parse_args()
+    source = args.source
 
-    position = args.position if args.position else len(args.source)
+    if os.path.exists(args.source):
+        with open(args.source) as source_file:
+            source = source_file.read()
+
+    position = args.position if args.position else len(source)
 
     output = pydocstring.generate_docstring(args.source,
                                             position=position,

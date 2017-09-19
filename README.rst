@@ -62,4 +62,5 @@ Feel free to help out on one of these
 
 - Conversion between docstring styles
 - Updating docstrings (with parameters removed, exceptions no longer thrown, etc)
+- Optional in-place addition of docstrings to file(s) when run on the command line
 
