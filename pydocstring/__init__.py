@@ -6,18 +6,18 @@ from pydocstring import _version
 from pydocstring import parse_utils
 from pydocstring.document import Document
 from pydocstring import exc
-from pydocstring.formatters import google
+from pydocstring.formatters import google, numpy, reST
 
 
 __version__ = _version.public_version
 
 
-def generate_docstring(document, position=0, formatter="Google"):  # pragma: no cover
+def generate_docstring(source, position=0, formatter="Google"):  # pragma: no cover
     """Generate a docstring
 
     Args:
-       document (str): the text of the document
-       position: (int): the position of the cursor in the document
+       source (str): the text of the source
+       position: (int): the position of the cursor in the source
        formatter (str): the format of the docstring choose from; `["Google"]`
            (currently only google docstring supported)
 
@@ -31,29 +31,32 @@ def generate_docstring(document, position=0, formatter="Google"):  # pragma: no 
     """
     formatter = formatter.lower()
 
+    formatter_module = None
+    if formatter == "google":
+        formatter_module = google
+    elif formatter == "numpy":
+        formatter_module = numpy
+    elif formatter == "rest":
+        formatter_module = reST
+    else:
+        raise exc.InvalidFormatter(formatter)
+
     if position == 0:
         # scan module for attributes and create docstring
-        module_attributes = parse_utils.parse_module_attributes(document)
-        return google.module_docstring(module_attributes)
+        module_attributes = parse_utils.parse_module_attributes(source)
+        return formatter_module.module_docstring(module_attributes)
 
-    document = Document(document, position)
+    document = Document(source, position)
     decl_range = document.get_block()
     decl = document.get_range(*decl_range)
 
     if decl.strip().startswith("class"):
         class_attributes = parse_utils.parse_class_attributes(decl)
-        if formatter == "google":
-            return google.class_docstring(class_attributes)
-        else:
-            raise exc.InvalidFormatter(formatter)
+        return formatter_module.class_docstring(class_attributes)
     elif decl.strip().startswith("def") or decl.strip().startswith("async"):
         params, return_type = parse_utils.parse_function_declaration(decl)
         exceptions = parse_utils.parse_function_exceptions(decl)
         return_statements = parse_utils.parse_return_keyword(decl)
-
-        if formatter == "google":
-            return google.function_docstring(params, return_type, exceptions, return_statements)
-        else:
-            raise exc.InvalidFormatter(formatter)
+        return formatter_module.function_docstring(params, return_type, exceptions, return_statements)
     else:
         return None

@@ -28,11 +28,15 @@ def main():
     parser.add_argument("string", help="The Python document to process")
     parser.add_argument("position", nargs="?", type=int,
                         help="Position of the cursor in the document, defaults to the end")
+    parser.add_argument("-f", "--formatter", choices=pydocstring.formatters.__all__,
+                        help="Docstring formatter")
     parser.add_argument('--version', action='version',
                         version='%(prog)s {0}'.format(pydocstring.__version__))
     args = parser.parse_args()
 
     position = args.position if args.position else len(args.string)
 
-    output = pydocstring.generate_docstring(args.string, position=position)
+    output = pydocstring.generate_docstring(args.string,
+                                            position=position,
+                                            formatter=args.formatter)
     print('"""\n' + output + '"""\n')
