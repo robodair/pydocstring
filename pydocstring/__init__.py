@@ -29,6 +29,7 @@ def generate_docstring(document, position=0, formatter="Google"):  # pragma: no 
        str or None: The contents of the docstring, excluding quotation marks, or None, if one could
            not be generated
     """
+    formatter = formatter.lower()
 
     if position == 0:
         # scan module for attributes and create docstring
@@ -41,7 +42,7 @@ def generate_docstring(document, position=0, formatter="Google"):  # pragma: no 
 
     if decl.strip().startswith("class"):
         class_attributes = parse_utils.parse_class_attributes(decl)
-        if formatter == "Google":
+        if formatter == "google":
             return google.class_docstring(class_attributes)
         else:
             raise exc.InvalidFormatter(formatter)
@@ -50,7 +51,7 @@ def generate_docstring(document, position=0, formatter="Google"):  # pragma: no 
         exceptions = parse_utils.parse_function_exceptions(decl)
         return_statements = parse_utils.parse_return_keyword(decl)
 
-        if formatter == "Google":
+        if formatter == "google":
             return google.function_docstring(params, return_type, exceptions, return_statements)
         else:
             raise exc.InvalidFormatter(formatter)
