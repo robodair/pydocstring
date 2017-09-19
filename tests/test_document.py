@@ -84,8 +84,9 @@ more nothing
             (201, 237),
             (315, 342),
             (377, 426),
-            # (480, 505), Not the match in a string, and regex avoids
-            # the declaration in the comment anyway (only whitespace before the
+            (480, 505), # Include the match in a string, otherwise autocompletion after an opening
+            # """ doesn't work properly (later scopes are searched)
+            # regex avoids the declaration in the comment anyway (only whitespace before the
             # decl allowed)
             (559, 645),
             (726, 801),

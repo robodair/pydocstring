@@ -41,7 +41,7 @@ FUNC_DECL_RE = r"^[^\S\n]*{0}\s*:".format(__FUNC_RE)
 
 # Yes, this will swallow a large chunk of the document if there's an open string
 # (like one for autocomplete), but in that case we're ignoring everything after the cursor anyway
-PYTHON_STRINGS = r"(\"\"\"[\s\S]*?\"\"\")|(\"[\s\S]*?\")|(\'\'\'[\s\S]*?\'\'\')|(\'[\s\S]*?\')"
+# PYTHON_STRINGS = r"(\"\"\"[\s\S]*?\"\"\")|(\"[\s\S]*?\")|(\'\'\'[\s\S]*?\'\'\')|(\'[\s\S]*?\')"
 PYTHON_COMMENTS = r"#.*"
 
 
@@ -98,7 +98,10 @@ class Document(object):
 
         final_ranges = []
         exclude_ranges = self.find_all(PYTHON_COMMENTS)
-        exclude_ranges += self.find_all(PYTHON_STRINGS)
+        # exclude_ranges += self.find_all(PYTHON_STRINGS)
+        # stopped excluding strings, because if they are excluded then autocomplete after '"""'
+        # picks up returns, raises, etc, from later in the document (in other scopes, after the
+        # string is ended)
 
         def overlap(min1, max1, min2, max2):
             return max(0, min(max1, max2) - max(min1, min2))

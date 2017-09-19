@@ -64,7 +64,7 @@ def main():
 
     position = args.position if args.position else len(source)
 
-    output = pydocstring.generate_docstring(args.source,
+    output = pydocstring.generate_docstring(source,
                                             position=position,
                                             formatter=args.formatter)
     if output != None:
