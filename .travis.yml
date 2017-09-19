@@ -23,7 +23,6 @@ deploy:
     file_glob: true
     file: dist/*
     on:
-      python: '3.6'
       tags: true
       repo: robodair/pydocstring
   - provider: pypi
