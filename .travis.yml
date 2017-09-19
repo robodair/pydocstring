@@ -9,19 +9,27 @@ python:
 install:
 - travis_retry pip install -r requirements-dev.txt
 - pip install -e .
-- if [ "$TRAVIS_PYTHON_VERSION" == "3.2" ]; then travis_retry pip install coverage==3.7.1; fi
+- if [ "$TRAVIS_PYTHON_VERSION" == "3.2" ]; then travis_retry pip install coverage==3.7.1;
+  fi
 script:
 - nosetests
 - nosetests --with-coverage
 - python setup.py sdist bdist_wheel
 deploy:
-  provider: releases
-  skip_cleanup: true
-  api_key:
-    secure: 5/s0vQp3qmyE3lg38a1zTQM+HyUS0fnegvNHy3kh7cBacX60HakLmSA+NlUZX/epxHSb6eUJTg00ZCg89oOH5WWGPNkMRk3302MKWtNZXabR4JcOspGVnM9XBVpT+E3EDZumlC6p5YrX89QueelU0Isd/9AY1pbPxjAqMGgAPcuuKxWbxTYBkHBSIdm1xpU/P8PlFBtIJaeCgsZr72/AmuYXjb0gfVDoVaJa5hdj8gG47kWK3N4mwU+yh+A6BjUeuEUaUy2QYSK3KaB1AGw9w+6cZb0Odx6frrzdUx2sUP8yAxSIUgEjcygG9fy8ZUiwxJtyTzqIxx+1ssdp6oNVJzwWSaDVQE4l7GtipV+iEMr247LlChs+z7tNElYyZhZRj9rwqUwaNzlwIrIAf7zIuhZRH6G8b/8wka9RIMo7m+ivyVF2RiDjatqchE1BDClUrEdpWIzXRQywiPehDsmDOHGe2PaFdb8QFjdP2Q2onWg4Y7ou6LTPUFrqy0Oz0J8tvPdyliNsIW9crZjibJhx2ChbjMU8QxyzjlU17lhsHOeRR60NbZu0n5ZRkULMFycsRzwAE6CbyU8IktjQIRlXhjfAd0JSNqFvq8S17x51yjBU/sOmeJwfqMKQY2beuCaNhcJj5HksvKNmrc4zGPk6oiOJvbpm7KDQh0pCRKrewks=
-  file_glob: true
-  file: dist/*
-  on:
-    python: "3.6"
-    tags: true
-    repo: robodair/pydocstring
+  - provider: releases
+    skip_cleanup: true
+    api_key:
+      secure: 5/s0vQp3qmyE3lg38a1zTQM+HyUS0fnegvNHy3kh7cBacX60HakLmSA+NlUZX/epxHSb6eUJTg00ZCg89oOH5WWGPNkMRk3302MKWtNZXabR4JcOspGVnM9XBVpT+E3EDZumlC6p5YrX89QueelU0Isd/9AY1pbPxjAqMGgAPcuuKxWbxTYBkHBSIdm1xpU/P8PlFBtIJaeCgsZr72/AmuYXjb0gfVDoVaJa5hdj8gG47kWK3N4mwU+yh+A6BjUeuEUaUy2QYSK3KaB1AGw9w+6cZb0Odx6frrzdUx2sUP8yAxSIUgEjcygG9fy8ZUiwxJtyTzqIxx+1ssdp6oNVJzwWSaDVQE4l7GtipV+iEMr247LlChs+z7tNElYyZhZRj9rwqUwaNzlwIrIAf7zIuhZRH6G8b/8wka9RIMo7m+ivyVF2RiDjatqchE1BDClUrEdpWIzXRQywiPehDsmDOHGe2PaFdb8QFjdP2Q2onWg4Y7ou6LTPUFrqy0Oz0J8tvPdyliNsIW9crZjibJhx2ChbjMU8QxyzjlU17lhsHOeRR60NbZu0n5ZRkULMFycsRzwAE6CbyU8IktjQIRlXhjfAd0JSNqFvq8S17x51yjBU/sOmeJwfqMKQY2beuCaNhcJj5HksvKNmrc4zGPk6oiOJvbpm7KDQh0pCRKrewks=
+    file_glob: true
+    file: dist/*
+    on:
+      python: '3.6'
+      tags: true
+      repo: robodair/pydocstring
+  - provider: pypi
+    skip_cleanup: true
+    user: robodair
+    password:
+      secure: rBgaXD7HKbpiL/n21zZW/d+cKFwtbgM32xiAbM1DNz424BwLBBQK7urTMob4hdC+66PFAdZJU/Jr83M29P3t0tndn09ZeJ5rpnKlWSnpwzMCAFb/lxsWd0kuuchVx22rEnG8tsUtSXMMzWLegAdp14JO3POx4LtzX7kBbh+4Fv+F9ai5FO2K0fUFj0tv6W8s/GPJQxXJTMYYS09uVWI6ayHOvVNaLuITxfivQwy4ZO/UWlSCl92DozB0FA4ynZVle/8tI1pWspKMG/txwzSYfH6KMD/pDiOt61KKbenrD/6DIjjvN4OxVlV6w2XCCCAPLOZ6NooOTA0+Mkr+9tVd+WeALaBHopMqPbhXpiN230GkRWeonxLgMcjjr03O0+mXFr2CIqO4A6yV8Mxx+y3TJssR/wJsxnrdqby2usS6CHexaIR1Ui82b0XgOdaR6duxRDnhVHLWdxDTrkcAvmPANGObS5gDV3NwMaihLoSa+kIHxCqPtyEmo+MueXXue0o8q4RA0AOvNdgs7mQtIDSzrYRmMA23xVJoWPVInLLgPTHEw2EOUJyW6lC5qKkqmj1uH3r7XoAKAsXf9q1M6r/606If+Ic7J8C+IJiiaUQAEBiASkqLWsy76gLsKzpFWU3veufDnrSW2UEbNrZzN38L1YYogM4YMj9dTnz0nMZaW64=
+    on:
+      tags: true
