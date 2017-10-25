@@ -3,15 +3,15 @@ pydocstring exceptions
 """
 
 
-class InvalidFormatter(Exception):
+class InvalidFormatterError(Exception):
     """
     Provided name of formatter is not one supported
     """
     pass
 
 
-class UnknownDeclaration(Exception):
+class FailedToGenerateDocstringError(Exception):
     """
-    Could not determine if the declaration was a module, class or method
+    Could not generate a docstring for the given code and position
     """
     pass

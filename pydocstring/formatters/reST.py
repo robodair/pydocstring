@@ -1,108 +1,140 @@
 """
 reST Docstring Formatter
 """
+from parso.python.tree import Function, Class, Module, KeywordStatement, Name, PythonNode, ExprStmt
+
+from pydocstring.formatters.format_utils import (
+    safe_determine_type,
+    get_param_info,
+    get_return_info,
+    get_exception_name
+)
 
 
-def function_docstring(params, return_type, exceptions, return_statements):
+def function_docstring(parso_function):
     """
     Format a reST docstring for a function
 
     Args:
-        params (OrderedDict): as returned by :py:func:`pydocstring.parse_utils.parse_function_declaration`
-        return_type (string or None): the return type of the function, if it was annotated
-        exceptions (list): List of exceptions raised in the function
-        return_statements (list): List of tuples containing 'yield' or 'return' as the first element
-            and the statement following that as the second.
+        parso_function (Function): The function tree node
 
     Returns:
         str: The formatted docstring
     """
+    assert isinstance(parso_function, Function)
 
     docstring = "\n"
 
+    params = parso_function.get_params()
     if params:
         docstring += "\n\n"
-        for param_name in params:
-            param = params[param_name]
-            param_type = param['type'] if param['type'] else "TYPE"
-            param_default = "default: ``" + \
-                param['default'] + "``" if param['default'] else ""
-            param_str = ":param {0}: {2}\n:type {0}: {1}\n".format(
-                param_name, param_type, param_default)
-            docstring += param_str
+        for param in params:
+            if param.star_count == 1:
+                docstring += ":param *{0}: {1}\n".format(param.name.value,
+                                                        "Variable length argument list.")
+            elif param.star_count == 2:
+                docstring += ":param **{0}: {1}\n".format(param.name.value,
+                                                        "Arbitrary keyword arguments.")
+            else:
+                docstring += ":param {0}: {2}\n:type {0}: {1}\n".format(*get_param_info(param))
 
-    return_expression = ""
-    return_statement = "returns"
-    decl_return_type = "TYPE"
-    if return_type:
-        decl_return_type = return_type
-    if return_statements:
-        return_expression = return_statements[0][1]
-        return_statement = return_statements[0][0] + "s"
+    returns = list(parso_function.iter_return_stmts())
+    if returns:
+        docstring += "\n\n"
+        for ret in returns:
+            docstring += ":return: {1}\n:rtype: {0}\n".format(
+                *get_return_info(ret, parso_function.annotation))
+    elif parso_function.annotation:
+        docstring += "\n\n"
+        docstring += ":return: \n:rtype: {0}\n".format(parso_function.annotation.value)
 
-    if return_statements or return_type:
-        docstring += "\n\n:{0}: {1}\n:rtype: {2}\n".format(return_statement,
-                                                           return_expression,
-                                                           decl_return_type)
+    yields = list(parso_function.iter_yield_exprs())
+    if yields:
+        docstring += "\n\n"
+        for yie in yields:
+            docstring += ":yields: {1}\n:ytype: {0}\n".format(
+                *get_return_info(yie, parso_function.annotation))
 
-    if exceptions:
-        docstring += "\n\n:raises: " + ", ".join(exceptions) + "\n"
+    raises = list(parso_function.iter_raise_stmts())
+    if raises:
+        docstring += "\n\n"
+        for exception in raises:
+            docstring += ":raises {0}: \n".format(get_exception_name(exception))
 
     docstring += "\n"
     return docstring
 
-
-def class_docstring(attributes):
+def class_docstring(parso_class):
     """
     Format a reST docstring for a class
 
-    Only accepts attributes, ``__init__`` method args can be documented on the ``__init__`` method
+    Only documents attributes, ``__init__`` method args can be documented on the ``__init__`` method
 
     Args:
-        attributes (list of tuples): attribute names, expression and type (or None)
+        parso_class (Class): The class tree node
 
     Returns:
         str: The formatted docstring
 
     """
+    assert isinstance(parso_class, Class)
     docstring = "\n"
+    attribute_expressions = []
 
-    if attributes:
+    for child in parso_class.children:
+        if child.type == 'suite':
+            for child2 in child.children:
+                if child2.type == 'simple_stmt':
+                    for child3 in child2.children:
+                        if child3.type == 'expr_stmt':
+                            attribute_expressions.append(child3)
+
+    if attribute_expressions:
         docstring += "\n\n"
-        for attribute, expression, attr_type in attributes:
-            if not attr_type:
-                attr_type = "TYPE"
-            attr_str = ":attr {0}: {2}\n:type {0}: {1}\n".format(
-                attribute, attr_type, expression)
+        for attribute in attribute_expressions:
+            name = attribute.children[0].value
+            code = attribute.get_rhs().get_code().strip()
+            attr_type = safe_determine_type(code)
+            attr_str = ":var {0}: {2}\n:type {0}: {1}\n".format(name, attr_type, code)
             docstring += attr_str
 
     docstring += "\n"
     return docstring
 
 
-def module_docstring(attributes):
+def module_docstring(parso_module):
     """
     Format a reST docstring for a module
 
-    Only accepts attributes, ``__init__`` method args can be documented on the ``__init__`` method
+    Only documents attributes, ``__init__`` method args can be documented on the ``__init__`` method
 
     Args:
-        attributes (list of tuples): attribute names, expression and type (or None)
+        parso_module (Module): The module tree node
 
     Returns:
         str: The formatted docstring
 
     """
+    assert isinstance(parso_module, Module)
     docstring = "\n"
+    attribute_expressions = []
 
-    if attributes:
+    for child in parso_module.children:
+        if child.type == 'simple_stmt':
+            for child2 in child.children:
+                if child2.type == 'expr_stmt':
+                    attribute_expressions.append(child2)
+
+    if attribute_expressions:
         docstring += "\n\n"
-        for attribute, expression, attr_type in attributes:
-            if not attr_type:
-                attr_type = "TYPE"
-            attr_str = ":attr {0}: {2}\n:type {0}: {1}\n".format(
-                attribute, attr_type, expression)
+        for attribute in attribute_expressions:
+            name = attribute.children[0].value
+            code = attribute.get_rhs().get_code().strip()
+            attr_type = safe_determine_type(code)
+            attr_str = ":var {0}: {2}\n:type {0}: {1}\n".format(name, attr_type, code)
             docstring += attr_str
 
     docstring += "\n"
+    if not docstring.strip():
+        docstring = "\n\nEmpty Module\n\n"
     return docstring

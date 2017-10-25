@@ -1,20 +1,29 @@
 language: python
+sudo: false
 python:
-- '2.7'
-- '3.2'
-- '3.3'
-- '3.4'
-- '3.5'
-- '3.6'
+  - 2.6
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
+  - 3.6
+  - pypy
+
+matrix:
+  allow_failures:
+    - env: TOXENV=coverage
+  include:
+    - python: 3.6
+      env: TOXENV=coverage
 install:
-- travis_retry pip install -r requirements-dev.txt
-- pip install -e .
-- if [ "$TRAVIS_PYTHON_VERSION" == "3.2" ]; then travis_retry pip install coverage==3.7.1;
-  fi
+    - pip install tox-travis
 script:
-- nosetests
-- nosetests --with-coverage
-- python setup.py sdist bdist_wheel
+  - tox --develop
+after_script:
+    - if [ $TOXENV == "coverage" ]; then
+      pip install --quiet coveralls;
+      coveralls;
+      fi
 deploy:
   - provider: releases
     python: "3.6"
