@@ -7,7 +7,7 @@ pydocstring
     :target: https://travis-ci.org/robodair/pydocstring
 
 .. image:: https://coveralls.io/repos/github/robodair/pydocstring/badge.svg?branch=master
-:target: https://coveralls.io/github/robodair/pydocstring?branch=master
+    :target: https://coveralls.io/github/robodair/pydocstring?branch=master
 
 
 .. image:: https://readthedocs.org/projects/pydocstring/badge/?version=latest
@@ -26,18 +26,28 @@ pydocstring
     :target: https://pypi.org/project/pydocstring/
 
 
-Python package for autogenerating python docstrings
+Python package for autogenerating python docstrings, built on top of `Parso <https://github.com/davidhalter/parso>`_.
 
 
-The idea is that this project can be wrapped by an editor extension to provide docstrings as autocompletion or in response to a shortcut.
-
+This project can be wrapped by an editor extension to provide docstrings as autocompletion or in response to a shortcut command.
 
 Status
 ======
 
-Beta, ready for basic use - Supports Google, Numpy, and reST docstring formatting but no others (it's really simple to add one though)
+Ready for basic use - Supports **Google**, **Numpy**, and **reST** docstring formats are supported, and it's pretty simple to create your own formatter.
+
+Types are able to be inferred for some things, but if they can't be worked out '``TYPE``' is just inserted instead.
 
 Doesn't support more complicated things like converting between styles or updating docstrings.
+
+Future
+======
+
+Check the issues for any more, but the nice-to-haves are:
+
+- Docstring insertion for a whole file
+- Updating docstrings for methods with changed paramenters/exeptions/Types
+- Conversion between docstring styles
 
 Docs
 ====
@@ -45,9 +55,9 @@ Docs
 Documentation is on `Read The Docs <http://pydocstring.readthedocs.io/>`_
 
 API
----
+===
 
-For integration with editors, there's a really simple api avaialble (just a single call), check out the docs for more on that
+For integration with editors, there's a really simple api avaialble (just a single call), check out the docs for more on that.
 
 Download
 ========
@@ -57,14 +67,3 @@ pydocstring is on `PyPI <https://pypi.org/project/pydocstring/>`_ and can be ins
 .. code-block:: bash
 
     pip install pydocstring
-
-
-TODO
-====
-
-Feel free to help out on one of these
-
-- Conversion between docstring styles
-- Updating docstrings (with parameters removed, exceptions no longer thrown, etc)
-- Optional in-place addition of docstrings to file(s) when run on the command line
-

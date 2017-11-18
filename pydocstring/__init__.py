@@ -3,7 +3,7 @@ Top level API - all you need to integrate with an editor, just call
 :py:func:`pydocstring.generate_docstring` with the source code and the position of your cursor.
 """
 
-__version__ = "0.0.dev19"
+__version__ = "0.1.1"
 
 import parso
 from parso.python.tree import search_ancestor, BaseNode
