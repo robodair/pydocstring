@@ -1,111 +1,142 @@
 """
 Numpy Docstring Formatter
 """
+from parso.python.tree import Function, Class, Module, KeywordStatement, Name, PythonNode, ExprStmt
+
+from pydocstring.formatters.format_utils import (
+    safe_determine_type,
+    get_param_info,
+    get_return_info,
+    get_exception_name
+)
 
 
-def function_docstring(params, return_type, exceptions, return_statements):
+def function_docstring(parso_function):
     """
-    Format a Numpy docstring for a function
+    Format a numpy docstring for a function
 
     Args:
-        params (OrderedDict): as returned by :py:func:`pydocstring.parse_utils.parse_function_declaration`
-        return_type (string or None): the return type of the function, if it was annotated
-        exceptions (list): List of exceptions raised in the function
-        return_statements (list): List of tuples containing 'yield' or 'return' as the first element
-            and the statement following that as the second.
+        parso_function (Function): The function tree node
 
     Returns:
         str: The formatted docstring
     """
+    assert isinstance(parso_function, Function)
 
-    docstring = "\n\n"
+    docstring = "\n"
 
+    params = parso_function.get_params()
     if params:
-        docstring += "\nParameters\n----------\n"
-        for param_name in params:
-            param = params[param_name]
-            param_type = param['type'] if param['type'] else "TYPE"
-            param_default = "default: ``" + \
-                param['default'] + "``" if param['default'] else ""
-            param_str = "{0} : {1}\n    {2}\n".format(
-                param_name, param_type, param_default)
-            docstring += param_str
+        docstring += "\n\n    Parameters\n    ----------\n"
+        for param in params:
+            if param.star_count == 1:
+                docstring += "    *{0}\n        {1}\n".format(param.name.value,
+                                                        "Variable length argument list.")
+            elif param.star_count == 2:
+                docstring += "    **{0}\n        {1}\n".format(param.name.value,
+                                                        "Arbitrary keyword arguments.")
+            else:
+                docstring += "    {0} : {1}\n        {2}\n".format(*get_param_info(param))
 
-    if return_type and return_statements:
-        docstring += "\nReturns\n-------\n"
-        docstring += "{0}\n    {1}\n".format(return_type,
-                                             return_statements[0][1])
-    elif return_type:
-        docstring += "\nReturns\n-------\n"
-        docstring += "{0}\n    \n".format(return_type)
-    elif return_statements:
-        if return_statements[0][0] == "yield":
-            docstring += "\nYields\n------\n"
-        else:
-            docstring += "\nReturns\n-------\n"
-        docstring += "{0}\n    {1}\n".format("TYPE", return_statements[0][1])
+    returns = list(parso_function.iter_return_stmts())
+    if returns:
+        docstring += "\n\n    Returns\n    -------\n"
+        for ret in returns:
+            docstring += "    {0}\n        {1}\n".format(
+                *get_return_info(ret, parso_function.annotation))
+    elif parso_function.annotation:
+        docstring += "\n\n    Returns\n    -------\n"
+        docstring += "    {0}\n        \n".format(parso_function.annotation.value)
 
-    if exceptions:
-        docstring += "\nRaises\n------\n"
-        for exception in exceptions:
-            docstring += "{0}\n    \n".format(exception)
+    yields = list(parso_function.iter_yield_exprs())
+    if yields:
+        docstring += "\n\n    Yields\n    ------\n"
+        for yie in yields:
+            docstring += "    {0}\n        {1}\n".format(
+                *get_return_info(yie, parso_function.annotation))
 
-    if docstring != "\n\n":
-        docstring += "\n"
+    raises = list(parso_function.iter_raise_stmts())
+    if raises:
+        docstring += "\n\n    Raises\n    ------\n"
+        for exception in raises:
+            docstring += "    {0}\n        \n".format(get_exception_name(exception))
+
+    docstring += "\n"
     return docstring
 
 
-def class_docstring(attributes):
+def class_docstring(parso_class):
     """
-    Format a Numpy docstring for a class
+    Format a numpy docstring for a class
 
-    Only accepts attributes, ``__init__`` method args can be documented on the ``__init__`` method
+    Only documents attributes, ``__init__`` method args can be documented on the ``__init__`` method
 
     Args:
-        attributes (list of tuples): attribute names, expression and type (or None)
+        parso_class (Class): The class tree node
 
     Returns:
         str: The formatted docstring
 
     """
+    assert isinstance(parso_class, Class)
     docstring = "\n"
+    attribute_expressions = []
 
-    if attributes:
-        docstring += "\n\nAttributes\n----------\n"
-        for attribute, expression, attr_type in attributes:
-            if not attr_type:
-                attr_type = "TYPE"
-            attr_str = "{0} : {1}\n    {2}\n".format(
-                attribute, attr_type, expression)
+    for child in parso_class.children:
+        if child.type == 'suite':
+            for child2 in child.children:
+                if child2.type == 'simple_stmt':
+                    for child3 in child2.children:
+                        if child3.type == 'expr_stmt':
+                            attribute_expressions.append(child3)
+
+    print(attribute_expressions)
+    if attribute_expressions:
+        docstring += "\n\n    Attributes\n    ----------\n"
+        for attribute in attribute_expressions:
+            name = attribute.children[0].value
+            code = attribute.get_rhs().get_code().strip()
+            attr_type = safe_determine_type(code)
+            attr_str = "    {0} : {1}\n        {2}\n".format(name, attr_type, code)
             docstring += attr_str
 
     docstring += "\n"
     return docstring
 
 
-def module_docstring(attributes):
+def module_docstring(parso_module):
     """
-    Format a Numpy docstring for a module
+    Format a numpy docstring for a module
 
-    Only accepts attributes, ``__init__`` method args can be documented on the ``__init__`` method
+    Only documents attributes, ``__init__`` method args can be documented on the ``__init__`` method
 
     Args:
-        attributes (list of tuples): attribute names, expression and type (or None)
+        parso_module (Module): The module tree node
 
     Returns:
         str: The formatted docstring
 
     """
+    assert isinstance(parso_module, Module)
     docstring = "\n"
+    attribute_expressions = []
 
-    if attributes:
-        docstring += "\n\nAttributes\n----------\n"
-        for attribute, expression, attr_type in attributes:
-            if not attr_type:
-                attr_type = "TYPE"
-            attr_str = "{0} : {1}\n    {2}\n".format(
-                attribute, attr_type, expression)
+    for child in parso_module.children:
+        if child.type == 'simple_stmt':
+            for child2 in child.children:
+                if child2.type == 'expr_stmt':
+                    attribute_expressions.append(child2)
+
+    if attribute_expressions:
+        docstring += "\n\n    Attributes\n    ----------\n"
+        for attribute in attribute_expressions:
+            name = attribute.children[0].value
+            code = attribute.get_rhs().get_code().strip()
+            attr_type = safe_determine_type(code)
+            attr_str = "    {0} : {1}\n        {2}\n".format(name, attr_type, code)
             docstring += attr_str
 
     docstring += "\n"
+    if not docstring.strip():
+        docstring = "\n\nEmpty Module\n\n"
     return docstring

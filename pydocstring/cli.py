@@ -19,7 +19,7 @@ You may also want to provide the ``-f`` flag with the formatter you want to use.
     positional arguments:
     source                Source code to process, or the path to a file
     position              Position of the cursor in the document, defaults to
-                            the end
+                          the end. Row, then column
 
     optional arguments:
     -h, --help            show this help message and exit
@@ -28,14 +28,16 @@ You may also want to provide the ``-f`` flag with the formatter you want to use.
     --version             show program's version number and exit
 
 """
-from __future__ import print_function
-import sys
-import os
-import argparse
-import pydocstring
+from __future__ import print_function #pragma: no cover
+import sys #pragma: no cover
+import os #pragma: no cover
+import argparse #pragma: no cover
+import ast #pragma: no cover
+import pydocstring #pragma: no cover
+from pydocstring import exc #pragma: no cover
 
 
-def main():
+def main(): #pragma: no cover
     """
     CLI entrypoint
     """
@@ -45,16 +47,20 @@ def main():
                         help="Source code to process, or the path to a file")
     parser.add_argument("position",
                         nargs="?",
-                        type=int,
-                        help="Position of the cursor in the document, defaults to the end")
+                        type=ast.literal_eval,
+                        help="Position of the cursor in the document, defaults to the end. \
+                            Row, then column, presented as a string python tuple. E.g. '(10, 15)'")
     parser.add_argument("-f", "--formatter",
-                        choices=pydocstring.formatters.__all__,
-                        default=pydocstring.formatters.__all__[0],
+                        choices=['google', 'numpy', 'reST'],
+                        default='google',
                         type=str,
                         help="docstring formatter to use")
     parser.add_argument('--version',
                         action='version',
                         version='%(prog)s {0}'.format(pydocstring.__version__))
+    parser.add_argument('--debug',
+                        action="store_true",
+                        help="Show stacktraces")
     args = parser.parse_args()
     source = args.source
 
@@ -62,13 +68,18 @@ def main():
         with open(args.source) as source_file:
             source = source_file.read()
 
-    position = args.position if args.position else len(source)
+    lines = source.splitlines()
+    position = tuple(args.position) if args.position else (len(lines), len(lines[-1]))
+    print(position)
 
-    output = pydocstring.generate_docstring(source,
-                                            position=position,
-                                            formatter=args.formatter)
-    if output != None:
+    try:
+        output = pydocstring.generate_docstring(source,
+                                                position=position,
+                                                formatter=args.formatter)
         print('"""\n' + output + '"""\n')
-    else:
-        sys.stderr.write("Could not generate a docstring for the given source\n")
+    except Exception as ex:
+        if args.debug:
+            raise ex
+        sys.stderr.write("Could not generate a docstring for the given source:\n")
+        sys.stderr.write(repr(ex))
         sys.exit(1)

@@ -6,6 +6,10 @@ pydocstring
 .. image:: https://travis-ci.org/robodair/pydocstring.svg?branch=master
     :target: https://travis-ci.org/robodair/pydocstring
 
+.. image:: https://coveralls.io/repos/github/robodair/pydocstring/badge.svg?branch=master
+:target: https://coveralls.io/github/robodair/pydocstring?branch=master
+
+
 .. image:: https://readthedocs.org/projects/pydocstring/badge/?version=latest
     :target: https://pydocstring.readthedocs.io/en/latest/?badge=latest
 
@@ -43,7 +47,7 @@ Documentation is on `Read The Docs <http://pydocstring.readthedocs.io/>`_
 API
 ---
 
-For integration with editors, there's a really simple api avaialble
+For integration with editors, there's a really simple api avaialble (just a single call), check out the docs for more on that
 
 Download
 ========
