@@ -6,9 +6,8 @@ pydocstring
 .. image:: https://travis-ci.org/robodair/pydocstring.svg?branch=master
     :target: https://travis-ci.org/robodair/pydocstring
 
-.. image:: https://coveralls.io/repos/github/robodair/pydocstring/badge.svg?branch=master
-    :target: https://coveralls.io/github/robodair/pydocstring?branch=master
-
+.. image:: https://codecov.io/gh/robodair/pydocstring/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/robodair/pydocstring
 
 .. image:: https://readthedocs.org/projects/pydocstring/badge/?version=latest
     :target: https://pydocstring.readthedocs.io/en/latest/?badge=latest
