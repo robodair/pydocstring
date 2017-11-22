@@ -12,9 +12,13 @@ python:
 matrix:
   include:
     - python: 3.6
-      env: TOXENV=coverage
+      env:
+        - TOXENV=coverage
+        - NO_DEPLOY=1
     - python: 3.6
-      env: TOXENV=documentation
+      env:
+        - TOXENV=documentation
+        - NO_DEPLOY=1
 install:
     - pip install tox-travis
 script:
@@ -30,7 +34,7 @@ deploy:
       python: "3.6"
       tags: true
       repo: robodair/pydocstring
-      condition: $TOXENV != "coverage"
+      condition: $NO_DEPLOY != 1
   - provider: releases
     skip_cleanup: true
     api_key:
@@ -41,7 +45,7 @@ deploy:
       tags: true
       python: "2.7"
       repo: robodair/pydocstring
-      condition: $TOXENV != "coverage"
+      condition: $NO_DEPLOY != 1
   - provider: pypi
     distributions: "sdist bdist_wheel"
     skip_cleanup: true
@@ -51,7 +55,7 @@ deploy:
     on:
       tags: true
       python: "3.6"
-      condition: $TOXENV != "coverage"
+      condition: $NO_DEPLOY != 1
   - provider: pypi
     distributions: "bdist_wheel"
     skip_cleanup: true
@@ -61,4 +65,4 @@ deploy:
     on:
       tags: true
       python: "2.7"
-      condition: $TOXENV != "coverage"
+      condition: $NO_DEPLOY != 1
