@@ -67,3 +67,8 @@ pydocstring is on `PyPI <https://pypi.org/project/pydocstring/>`_ and can be ins
 .. code-block:: bash
 
     pip install pydocstring
+
+Development
+===========
+
+Testing/Coverage is automanted with `tox <http://tox.readthedocs.io/>`_. Pull requests are welcome.

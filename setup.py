@@ -4,14 +4,14 @@ import subprocess
 from subprocess import CalledProcessError
 from setuptools import find_packages, setup
 
-VERSIONFILE="pydocstring/__init__.py"
-verstrline = open(VERSIONFILE, "rt").read()
-VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
-mo = re.search(VSRE, verstrline, re.M)
-if mo:
-    version = mo.group(1)
+INIT_FILE="pydocstring/__init__.py"
+contents = open(INIT_FILE, "rt").read()
+VS_RE = r"^__version__ = ['\"]([^'\"]*)['\"]"
+version_attr = re.search(VS_RE, contents, re.M)
+if version_attr:
+    version = version_attr.group(1)
 else:
-    raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
+    raise RuntimeError("Unable to find version string in {0}.".format(INIT_FILE))
 
 classifiers=[
     'Development Status :: 4 - Beta',
@@ -50,19 +50,5 @@ setup(
     },
     install_requires=[
         'parso==0.1.1'
-    ],
-    extras_require = {
-        "dev": [
-            "nose==1.3.7",
-            "coverage==4.4.1",
-            "rednose==1.2.2",
-            "Sphinx==1.6.3",
-            "pylint==1.7.2",
-            "sphinx_rtd_theme==0.2.4",
-            "sphinxcontrib-napoleon==0.6.1",
-            "twine==1.9.1",
-            "tox==2.9.1",
-            "pytest==3.2.5"
-        ]
-    }
+    ]
 )
