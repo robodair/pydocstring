@@ -28,7 +28,6 @@ You may also want to provide the ``-f`` flag with the formatter you want to use.
     --version             show program's version number and exit
 
 """
-from __future__ import print_function #pragma: no cover
 import sys #pragma: no cover
 import os #pragma: no cover
 import argparse #pragma: no cover
