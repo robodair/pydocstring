@@ -41,5 +41,6 @@ deploy:
       secure: rBgaXD7HKbpiL/n21zZW/d+cKFwtbgM32xiAbM1DNz424BwLBBQK7urTMob4hdC+66PFAdZJU/Jr83M29P3t0tndn09ZeJ5rpnKlWSnpwzMCAFb/lxsWd0kuuchVx22rEnG8tsUtSXMMzWLegAdp14JO3POx4LtzX7kBbh+4Fv+F9ai5FO2K0fUFj0tv6W8s/GPJQxXJTMYYS09uVWI6ayHOvVNaLuITxfivQwy4ZO/UWlSCl92DozB0FA4ynZVle/8tI1pWspKMG/txwzSYfH6KMD/pDiOt61KKbenrD/6DIjjvN4OxVlV6w2XCCCAPLOZ6NooOTA0+Mkr+9tVd+WeALaBHopMqPbhXpiN230GkRWeonxLgMcjjr03O0+mXFr2CIqO4A6yV8Mxx+y3TJssR/wJsxnrdqby2usS6CHexaIR1Ui82b0XgOdaR6duxRDnhVHLWdxDTrkcAvmPANGObS5gDV3NwMaihLoSa+kIHxCqPtyEmo+MueXXue0o8q4RA0AOvNdgs7mQtIDSzrYRmMA23xVJoWPVInLLgPTHEw2EOUJyW6lC5qKkqmj1uH3r7XoAKAsXf9q1M6r/606If+Ic7J8C+IJiiaUQAEBiASkqLWsy76gLsKzpFWU3veufDnrSW2UEbNrZzN38L1YYogM4YMj9dTnz0nMZaW64=
     on:
       python: 3.8
-      branch: master
+      tags: true
+      repo: robodair/pydocstring
       condition: $NO_DEPLOY != 1
