@@ -33,7 +33,7 @@ This project can be wrapped by an editor extension to provide docstrings as auto
 Status
 ======
 
-Ready for basic use - Supports **Google**, **Numpy**, and **reST** docstring formats are supported, and it's pretty simple to create your own formatter.
+Ready for basic use - Supports **Google**, **Numpy**, and **reST** docstring formats, and it's pretty simple to create your own formatter.
 
 Types are able to be inferred for some things, but if they can't be worked out '``TYPE``' is just inserted instead.
 
