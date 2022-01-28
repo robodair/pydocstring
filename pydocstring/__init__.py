@@ -13,7 +13,7 @@ from pydocstring import exc
 
 FORMATTER = {
     "google": {
-        "start_args_block": "\n\nArgs:\n",
+        "start_args_block": "\nArgs:\n",
         "param_placeholder": "    {0} ({1}): {2}\n",
         "param_placeholder_args": "    *{0}: {1}\n",
         "param_placeholder_kwargs": "    **{0}: {1}\n",
@@ -28,7 +28,7 @@ FORMATTER = {
         "attribute_placeholder": "    {0} ({1}): {2}\n",
     },
     "numpy": {
-        "start_args_block": "\n\n    Parameters\n    ----------\n",
+        "start_args_block": "\n    Parameters\n    ----------\n",
         "param_placeholder": "    {0} : {1}\n        {2}\n",
         "param_placeholder_args": "    *{0}\n        {1}\n",
         "param_placeholder_kwargs": "    **{0}\n        {1}\n",
@@ -43,7 +43,7 @@ FORMATTER = {
         "attribute_placeholder": "    {0} : {1}\n        {2}\n",
     },
     "reST": {
-        "start_args_block": "\n\n",
+        "start_args_block": "\n",
         "param_placeholder": ":param {0}: {2}\n:type {0}: {1}\n",
         "param_placeholder_args": ":param *{0}: {1}\n",
         "param_placeholder_kwargs": ":param **{0}: {1}\n",

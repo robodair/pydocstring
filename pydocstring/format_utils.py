@@ -1,6 +1,9 @@
 """Provides helper utilities for formatting"""
 
 import ast
+import re
+
+from more_itertools.more import split_before
 
 
 def safe_determine_type(string):
@@ -17,15 +20,29 @@ def safe_determine_type(string):
         return ast.literal_eval(string).__class__.__name__
     except ValueError:
         try:
-            if (
-                string.startswith('set(')
-                or
-                isinstance(ast.literal_eval(string.replace(
-                    '{', '[').replace('}', ']')), list)
+            if string.startswith("set(") or isinstance(
+                ast.literal_eval(string.replace("{", "[").replace("}", "]")), list
             ):
-                return 'set'
+                return "set"
         except ValueError:
-            return 'TYPE'
+            return "TYPE"
+
+
+def parse_params(param_paragraph):
+    """Parse the paragraph corresponding to a param docstring description
+
+    Example:
+
+        person_count (int): an integer representing the number of
+            persons. As we can see, the docstring description of
+            'person_count' is running on multiple lines.
+    """
+    params = param_paragraph.split("\n")[1:]
+    regex = r"^\s*([a-zA-Z0-9_]+)\s*(\(.*\))?:"
+    return {
+        re.match(regex, lines[0]).group(1): "\n".join(lines)
+        for lines in split_before(params, lambda s: re.match(regex, s))
+    }
 
 
 def get_param_info(param):
@@ -39,8 +56,9 @@ def get_param_info(param):
         tuple: name, type, default
     """
     param_type = param.annotation.value if param.annotation else "TYPE"
-    param_default = " default: ``{0}``".format(
-        param.default.get_code()) if param.default else ""
+    param_default = (
+        " default: ``{0}``".format(param.default.get_code()) if param.default else ""
+    )
     if param_default and not param.annotation:
         param_type = safe_determine_type(param.default.get_code())
     return param.name.value, param_type, param_default
@@ -57,7 +75,7 @@ def get_return_info(ret, annotation):
     Returns:
         tuple: type, expression after 'return' keyword
     """
-    ret_type = annotation.value if annotation else 'TYPE'
+    ret_type = annotation.value if annotation else "TYPE"
     expression = "".join(x.get_code().strip() for x in ret.children[1:])
     expression = " ".join(expression.split())
     return ret_type, expression
@@ -74,6 +92,6 @@ def get_exception_name(node):
         str: The exception name
     """
     name = node.children[1]
-    while not name.type == 'name':
+    while not name.type == "name":
         name = name.children[0]
     return name.value

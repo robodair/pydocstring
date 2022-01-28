@@ -3,22 +3,21 @@ Test simple formatting of reST style docstrings
 """
 import sys
 import unittest
+
 import pytest
-from pydocstring.exc import FailedToGenerateDocstringError
+
 from pydocstring import generate_docstring
+from pydocstring.exc import FailedToGenerateDocstringError
 
 
 class TestreSTFunctionFormatting(unittest.TestCase):
-
     def test_params_args_kwargs(self):
-        method = \
-            """
+        method = """
 def method(*args, **kwargs):
     pass
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
-        expected = """
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
+        expected = """\
 
 
 :param *args: Variable length argument list.
@@ -28,8 +27,7 @@ def method(*args, **kwargs):
         assert docstring == expected
 
     def test_params_no_literal_set(self):
-        method = \
-            """
+        method = """
 def method(p1, p2=2,
            p3=3, p4={'a':'b'},
            p5=[1,2,3], p6=True,
@@ -37,9 +35,8 @@ def method(p1, p2=2,
            p9=(1,2,3)):
     pass
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
-        expected = """
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
+        expected = """\
 
 
 :param p1: \n\
@@ -64,8 +61,7 @@ def method(p1, p2=2,
 
     @pytest.mark.skipif(sys.version_info < (2, 7), reason="Requires Python 2.7")
     def test_params_py27(self):
-        method = \
-            """
+        method = """
 def method(p1, p2=2,
            p3=3, p4={'a':'b'},
            p5=[1,2,3], p6=True,
@@ -73,9 +69,8 @@ def method(p1, p2=2,
            p9=(1,2,3)):
     pass
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
-        expected = """
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
+        expected = """\
 
 
 :param p1: \n\
@@ -102,8 +97,7 @@ def method(p1, p2=2,
 
     @pytest.mark.skipif(sys.version_info < (3, 0), reason="Requires Python 3.0")
     def test_params_py3(self):
-        method = \
-            """
+        method = """
 def method(p1, p2: int,
            p3=3, p4={'a':'b'},
            p5=[1,2,3], p6=True,
@@ -111,9 +105,8 @@ def method(p1, p2: int,
            p9=(1,2,3)):
     pass
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
-        expected = """
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
+        expected = """\
 
 
 :param p1: \n\
@@ -140,13 +133,11 @@ def method(p1, p2: int,
 
     @pytest.mark.skipif(sys.version_info < (3, 0), reason="Requires Python 3.0")
     def test_return_annotation_only(self):
-        method = \
-            """
+        method = """
 def method() -> int:
     pass
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
 
         expected = """
 
@@ -159,13 +150,11 @@ def method() -> int:
 
     @pytest.mark.skipif(sys.version_info < (3, 0), reason="Requires Python 3.0")
     def test_return_type_and_statement(self):
-        method = \
-            """
+        method = """
 def method() -> int:
     return var1
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
 
         expected = """
 
@@ -178,13 +167,11 @@ def method() -> int:
 
     @pytest.mark.skipif(sys.version_info < (3, 0), reason="Requires Python 3.0")
     def test_yield_statement_simple(self):
-        method = \
-            """
+        method = """
 def method():
     yield var1
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
 
         expected = """
 
@@ -197,13 +184,11 @@ def method():
         assert docstring == expected
 
     def test_yield_statement_expression(self):
-        method = \
-            """
+        method = """
 def method():
     yield 2*2
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
 
         expected = """
 
@@ -215,15 +200,13 @@ def method():
         assert docstring == expected
 
     def test_yield_statement_multiline(self):
-        method = \
-            """
+        method = """
 def method():
     yield {
         2:3
     }
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
 
         expected = """
 
@@ -236,13 +219,11 @@ def method():
         assert docstring == expected
 
     def test_return_statement_simple(self):
-        method = \
-            """
+        method = """
 def method():
     return var1
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
         expected = """
 
 
@@ -253,13 +234,11 @@ def method():
         assert docstring == expected
 
     def test_return_statement_expression(self):
-        method = \
-            """
+        method = """
 def method():
     return 2*2
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
         expected = """
 
 
@@ -270,15 +249,13 @@ def method():
         assert docstring == expected
 
     def test_return_statement_multiline(self):
-        method = \
-            """
+        method = """
 def method():
     return {
         'a':'b'
     }
 """
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
         expected = """
 
 
@@ -289,14 +266,12 @@ def method():
         assert docstring == expected
 
     def test_one_exception_instantiated(self):
-        method = \
-            """
+        method = """
 def method():
     raise MyException()
 """
 
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
 
         expected = """
 
@@ -307,14 +282,12 @@ def method():
         assert docstring == expected
 
     def test_one_exception_uninstantiated(self):
-        method = \
-            """
+        method = """
 def method():
     raise MyExceptionUninstantiated
 """
 
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
 
         expected = """
 
@@ -325,8 +298,7 @@ def method():
         assert docstring == expected
 
     def test_two_exceptions(self):
-        method = \
-            """
+        method = """
 def method():
     if 1==1:
         raise MyException()
@@ -334,8 +306,7 @@ def method():
         raise Exception
 """
 
-        docstring = generate_docstring(
-            method, position=(2, 2), formatter="reST")
+        docstring = generate_docstring(method, position=(2, 2), formatter="reST")
 
         expected = """
 
@@ -348,10 +319,8 @@ def method():
 
 
 class TestreSTClassFormatting(unittest.TestCase):
-
     def test_class_attributes(self):
-        code = \
-"""
+        code = """
 class HelloWorld():
     attr1 = 3 * some_var
     attr2 = 2
@@ -376,10 +345,8 @@ class HelloWorld():
 
 
 class TestreSTModuleFormatting(unittest.TestCase):
-
     def test_module_attributes(self):
-        module = \
-"""
+        module = """
 from somewhere import var
 
 mattr1 = 3 * var
