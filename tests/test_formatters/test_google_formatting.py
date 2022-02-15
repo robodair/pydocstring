@@ -205,7 +205,8 @@ Raises:
 
 
 class TestGoogleFunctionFormattingWithExistingDocstring(unittest.TestCase):
-    def test_params_no_literal_set(self):
+    def test_keep_header(self):
+        """Test that an existing header is kept when updating the docstring."""
         method = """
 def method(p1, p2=2,
            p3=3, p4={'a':'b'},
@@ -230,6 +231,76 @@ Args:
 
 """
         assert docstring == expected
+
+
+def test_keep_existing_param_description():
+    """Test that an existing param description is kept when updating the docstring."""
+    method = """\
+def method(p1, p2):
+    '''I already have a description.
+
+    Args:
+        p2 (int): p2 already has a description
+    '''
+"""
+    docstring = generate_docstring(method, position=(2, 2), formatter="google")
+    expected = """\
+I already have a description.
+
+Args:
+    p1 (TYPE): \n\
+    p2 (int): p2 already has a description
+
+"""
+
+    assert docstring == expected
+
+
+def test_keep_existing_param_description_update_default():
+    """Test merging existing param description with missing default value."""
+    method = """\
+def method(p1, p2=3):
+    '''I already have a description.
+
+    Args:
+        p2 (int): p2 already has a description
+    '''
+"""
+    docstring = generate_docstring(method, position=(2, 2), formatter="google")
+    expected = """\
+I already have a description.
+
+Args:
+    p1 (TYPE): \n\
+    p2 (int):  default: ``3`` p2 already has a description
+
+"""
+
+    assert docstring == expected
+
+
+# def test_update_footnote():
+#     """Test keeping an existing footnote."""
+#     method = """
+# def method(p1, p2):
+#     '''I already have a description.
+
+#        Args:
+#            p1 (TYPE):
+#            p2 (TYPE):
+
+#     I already have a footnote.
+#     '''
+# """
+#     docstring = generate_docstring(method, position=(2, 2), formatter="google")
+#     expected = """\
+# I already have a description.
+
+# Args:
+#     p1 (TYPE):
+#     p2 (TYPE):
+# """
+#     assert "\n".join(line.rstrip() for line in docstring.split("\n")) == expected
 
 
 class TestGoogleClassFormatting(unittest.TestCase):

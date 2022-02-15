@@ -11,10 +11,16 @@ from parso.python.tree import BaseNode, search_ancestor
 import pydocstring.formatter
 from pydocstring import exc
 
+
+def param_placeholder_google(name, type, default, description):
+    description = " ".join(filter(None, [default, description]))
+    return "    {} ({}): {}\n".format(name, type, description)
+
+
 FORMATTER = {
     "google": {
         "start_args_block": "\nArgs:\n",
-        "param_placeholder": "    {0} ({1}): {2}\n",
+        "param_placeholder": param_placeholder_google,
         "param_placeholder_args": "    {0}: {1}\n",
         "start_return_block": "\n\nReturns:\n",
         "return_placeholder": "    {0}: {1}\n",

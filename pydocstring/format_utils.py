@@ -31,18 +31,23 @@ def safe_determine_type(string):
 def parse_params(param_paragraph):
     """Parse the paragraph corresponding to a param docstring description
 
-    Example:
+    Example of a paragraph:
 
         person_count (int): an integer representing the number of
             persons. As we can see, the docstring description of
             'person_count' is running on multiple lines.
+
+    Returns:
+        a 2-tuple: (param name: param paragraph)
     """
     params = param_paragraph.split("\n")[1:]
-    regex = r"^\s*([a-zA-Z0-9_]+)\s*(\(.*\))?:"
-    return {
-        re.match(regex, lines[0]).group(1): "\n".join(lines)
-        for lines in split_before(params, lambda s: re.match(regex, s))
-    }
+    re_name = r"^\s*([a-zA-Z0-9_]+)"
+    re_type_if_exists = r"\s*(?:\((.*)\))?:"
+    re_description = r"\s*(.*)"
+    regex = re_name + re_type_if_exists + re_description
+    for param_chunk in split_before(params, lambda s: re.match(regex, s)):
+        param_chunk = "\n".join(param_chunk)
+        yield re.match(regex, param_chunk).groups()
 
 
 def get_param_info(param):

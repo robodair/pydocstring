@@ -2,6 +2,9 @@
 Google Docstring Formatter
 """
 
+from collections import OrderedDict
+from textwrap import dedent
+
 from more_itertools.more import first
 from parso.python.tree import Class, Function, Module
 
@@ -23,9 +26,14 @@ class Param:
         name = parso_param.star_count * "*" + name
         return cls(name, type, default)
 
-    @classmethod
-    def from_raw_doc(cls, param_paragraph):
-        pass
+    def __str__(self):
+        return dedent(
+            f"""\
+Param(name={self.name},
+      type={self.type},
+      default={self.default},
+      description={self.description})"""
+        )
 
 
 class DocString:
@@ -42,10 +50,12 @@ class DocString:
     @classmethod
     def from_parso_function(cls, parso_function):
         return cls(
-            params={
-                param.name.value: Param.from_parso(param)
-                for param in parso_function.get_params()
-            },
+            params=OrderedDict(
+                [
+                    (param.name.value, Param.from_parso(param))
+                    for param in parso_function.get_params()
+                ]
+            ),
             returns=list(parso_function.iter_return_stmts()),
             yields=list(parso_function.iter_yield_exprs()),
             raises=list(parso_function.iter_raise_stmts()),
@@ -64,11 +74,15 @@ class DocString:
         )
 
         if param_paragraph_index:
-            for item in parse_params(paragraphs[param_paragraph_index]).items():
-                print(item)
-
-            params = [Param.from_raw_doc(paragraphs[param_paragraph_index])]
-            footer = paragraphs[param_paragraph_index + 1 :]
+            header = "\n\n".join(paragraphs[:param_paragraph_index])[3:]
+            params = [
+                Param(name=name, type=type_, description=description)
+                for name, type_, description in parse_params(
+                    paragraphs[param_paragraph_index]
+                )
+            ]
+            params = OrderedDict([param.name, param] for param in params)
+            footer = "\n\n".join(paragraphs[param_paragraph_index + 1 :])[:-3]
         else:
             header = doc[3:-3]
             params = []
@@ -76,8 +90,16 @@ class DocString:
         return cls(header=header, params=params, footer=footer)
 
     def merge(self, other):
+        """Merge both docstring objects.
+
+        If a param exists in the second docstring, it will override the one from the first one.
+        """
         self.header = self.header or other.header
-        self.params = self.params or other.params
+
+        for key in self.params.keys():
+            if key in other.params:
+                self.params[key].description = other.params[key].description
+                self.params[key].type = other.params[key].type
         self.returns = self.returns or other.returns
         self.yields = self.yields or other.yields
         self.raises = self.raises or other.raises
@@ -98,8 +120,8 @@ def function_docstring(parso_function: Function, formatter):
 
     input_doc = parso_function.get_doc_node()
     if input_doc:
-        doc = DocString.from_raw_doc(input_doc.value)
-        doc.merge(DocString.from_parso_function(parso_function))
+        doc = DocString.from_parso_function(parso_function)
+        doc.merge(DocString.from_raw_doc(input_doc.value))
     else:
         doc = DocString.from_parso_function(parso_function)
 
@@ -116,8 +138,8 @@ def function_docstring(parso_function: Function, formatter):
                     else "Variable length argument list.",
                 )
             else:
-                docstring += formatter["param_placeholder"].format(
-                    param.name, param.type, param.default
+                docstring += formatter["param_placeholder"](
+                    param.name, param.type, param.default, param.description
                 )
 
     if doc.returns:
