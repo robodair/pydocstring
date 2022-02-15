@@ -67,7 +67,7 @@ class DocString:
             for item in parse_params(paragraphs[param_paragraph_index]).items():
                 print(item)
 
-            params = [Param.frow_raw_doc(paragraphs[param_paragraph_index])]
+            params = [Param.from_raw_doc(paragraphs[param_paragraph_index])]
             footer = paragraphs[param_paragraph_index + 1 :]
         else:
             header = doc[3:-3]
@@ -108,18 +108,17 @@ def function_docstring(parso_function: Function, formatter):
     if doc.params:
         docstring += formatter["start_args_block"]
         for param in doc.params.values():
-            # if param.star_count == 1:
-            #     docstring += formatter["param_placeholder_args"].format(
-            #         param.name.value, "Variable length argument list."
-            #     )
-            # elif param.star_count == 2:
-            #     docstring += formatter["param_placeholder_kwargs"].format(
-            #         param.name.value, "Arbitrary keyword arguments."
-            #     )
-            # else:
-            docstring += formatter["param_placeholder"].format(
-                param.name, param.type, param.default
-            )
+            if param.name.startswith("*"):
+                docstring += formatter["param_placeholder_args"].format(
+                    param.name,
+                    "Arbitrary keyword arguments."
+                    if param.name.startswith("**")
+                    else "Variable length argument list.",
+                )
+            else:
+                docstring += formatter["param_placeholder"].format(
+                    param.name, param.type, param.default
+                )
 
     if doc.returns:
         docstring += formatter["start_return_block"]
