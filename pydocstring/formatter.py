@@ -9,8 +9,8 @@ from more_itertools.more import first
 from parso.python.tree import Class, Function, Module
 
 from pydocstring.format_utils import (get_exception_name, get_param_info,
-                                      get_return_info, parse_params,
-                                      safe_determine_type)
+                                      get_return_info, parse_footer,
+                                      parse_params, safe_determine_type)
 
 
 class Param:
@@ -87,7 +87,16 @@ class DocString:
             header = doc[3:-3]
             params = []
             footer = ""
-        return cls(header=header, params=params, footer=footer)
+
+        returns, raises, yields, footer = parse_footer(footer)
+        return cls(
+            header=header,
+            params=params,
+            returns=returns,
+            raises=raises,
+            yields=yields,
+            footer=footer,
+        )
 
     def merge(self, other):
         """Merge both docstring objects.

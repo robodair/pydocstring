@@ -50,6 +50,31 @@ def parse_params(param_paragraph):
         yield re.match(regex, param_chunk).groups()
 
 
+def parse_footer(footer):
+    paragraphs = footer.split("\n\n")
+
+    returns = None
+    raises = None
+    yields = None
+    footer = []
+    for paragraph in paragraphs:
+        what = paragraph.split(":")[0].strip()
+        if what == "Returns":
+            returns = paragraph
+        elif what == "Raises":
+            raises = paragraph
+        elif what == "Yields":
+            yields = paragraph
+        else:
+            footer.append(paragraph)
+
+    if footer:
+        footer = "\n\n".join(footer)
+    else:
+        footer = None
+    return returns, raises, yields, footer
+
+
 def get_param_info(param):
     """
     Extract info from a parso parameter
@@ -71,7 +96,7 @@ def get_param_info(param):
 
 def get_return_info(ret, annotation):
     """
-    Extract info from a node containing a return statement
+    Extract info from a node containing a return (or yield, or raise) statement.
 
     Args:
         ret: the return node

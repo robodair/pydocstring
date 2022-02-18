@@ -280,7 +280,7 @@ Args:
 
 
 # def test_update_footnote():
-#     """Test keeping an existing footnote."""
+#     """Test keeping an existing `Returns` description."""
 #     method = """
 # def method(p1, p2):
 #     '''I already have a description.
@@ -289,7 +289,8 @@ Args:
 #            p1 (TYPE):
 #            p2 (TYPE):
 
-#     I already have a footnote.
+#        Returns:
+#            TYPE: an existing returns description
 #     '''
 # """
 #     docstring = generate_docstring(method, position=(2, 2), formatter="google")
