@@ -11,12 +11,27 @@ from parso.python.tree import BaseNode, search_ancestor
 import pydocstring.formatter
 from pydocstring import exc
 
+
+def param_placeholder_google(name, type, default, description):
+    description = " ".join(filter(None, [default, description]))
+    return "    {} ({}): {}\n".format(name, type, description)
+
+
+def param_placeholder_numpy(name, type, default, description):
+    description = " ".join(filter(None, [default, description]))
+    return "    {} : {}\n        {}\n".format(name, type, description)
+
+
+def param_placeholder_rest(name, type, default, description):
+    description = " ".join(filter(None, [default, description]))
+    return ":param {}: {}\n:type {}: {}\n".format(name, description, name, type)
+
+
 FORMATTER = {
     "google": {
-        "start_args_block": "\n\nArgs:\n",
-        "param_placeholder": "    {0} ({1}): {2}\n",
-        "param_placeholder_args": "    *{0}: {1}\n",
-        "param_placeholder_kwargs": "    **{0}: {1}\n",
+        "start_args_block": "\nArgs:\n",
+        "param_placeholder": param_placeholder_google,
+        "param_placeholder_args": "    {0}: {1}\n",
         "start_return_block": "\n\nReturns:\n",
         "return_placeholder": "    {0}: {1}\n",
         "return_annotation_placeholder": "    {0}: \n",
@@ -28,10 +43,9 @@ FORMATTER = {
         "attribute_placeholder": "    {0} ({1}): {2}\n",
     },
     "numpy": {
-        "start_args_block": "\n\n    Parameters\n    ----------\n",
-        "param_placeholder": "    {0} : {1}\n        {2}\n",
-        "param_placeholder_args": "    *{0}\n        {1}\n",
-        "param_placeholder_kwargs": "    **{0}\n        {1}\n",
+        "start_args_block": "\n    Parameters\n    ----------\n",
+        "param_placeholder": param_placeholder_numpy,
+        "param_placeholder_args": "    {0}\n        {1}\n",
         "start_return_block": "\n\n    Returns\n    -------\n",
         "return_placeholder": "    {0}\n        {1}\n",
         "return_annotation_placeholder": "    {0}\n        \n",
@@ -43,10 +57,9 @@ FORMATTER = {
         "attribute_placeholder": "    {0} : {1}\n        {2}\n",
     },
     "reST": {
-        "start_args_block": "\n\n",
-        "param_placeholder": ":param {0}: {2}\n:type {0}: {1}\n",
-        "param_placeholder_args": ":param *{0}: {1}\n",
-        "param_placeholder_kwargs": ":param **{0}: {1}\n",
+        "start_args_block": "\n",
+        "param_placeholder": param_placeholder_rest,
+        "param_placeholder_args": ":param {0}: {1}\n",
         "start_return_block": "\n\n",
         "return_placeholder": ":return: {1}\n:rtype: {0}\n",
         "return_annotation_placeholder": ":return: \n:rtype: {0}\n",

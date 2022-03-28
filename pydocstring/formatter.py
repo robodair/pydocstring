@@ -1,15 +1,123 @@
 """
 Google Docstring Formatter
 """
-from parso.python.tree import Class, ExprStmt, Function, KeywordStatement, Module, Name, PythonNode
 
-from pydocstring.format_utils import (get_exception_name, get_param_info, get_return_info,
-                                      safe_determine_type)
+from collections import OrderedDict
+from textwrap import dedent
+
+from more_itertools.more import first
+from parso.python.tree import Class, Function, Module
+
+from pydocstring.format_utils import (get_exception_name, get_param_info,
+                                      get_return_info, parse_footer,
+                                      parse_params, safe_determine_type)
 
 
-def function_docstring(parso_function, formatter):
+class Param:
+    def __init__(self, name="", type="", default="", description=""):
+        self.name = name
+        self.type = type
+        self.default = default
+        self.description = description
+
+    @classmethod
+    def from_parso(cls, parso_param):
+        name, type, default = get_param_info(parso_param)
+        name = parso_param.star_count * "*" + name
+        return cls(name, type, default)
+
+    def __str__(self):
+        return dedent(
+            f"""\
+Param(name={self.name},
+      type={self.type},
+      default={self.default},
+      description={self.description})"""
+        )
+
+
+class DocString:
+    def __init__(
+        self, header="", params={}, returns="", yields="", raises="", footer=""
+    ):
+        self.header = header
+        self.params = params
+        self.returns = returns
+        self.yields = yields
+        self.raises = raises
+        self.footer = footer
+
+    @classmethod
+    def from_parso_function(cls, parso_function):
+        return cls(
+            params=OrderedDict(
+                [
+                    (param.name.value, Param.from_parso(param))
+                    for param in parso_function.get_params()
+                ]
+            ),
+            returns=list(parso_function.iter_return_stmts()),
+            yields=list(parso_function.iter_yield_exprs()),
+            raises=list(parso_function.iter_raise_stmts()),
+        )
+
+    @classmethod
+    def from_raw_doc(cls, doc):
+        paragraphs = doc.split("\n\n")
+        param_paragraph_index = first(
+            [
+                index
+                for index, paragraph in enumerate(paragraphs)
+                if paragraph.lstrip().startswith("Args:")
+            ],
+            default=None,
+        )
+
+        if param_paragraph_index:
+            header = "\n\n".join(paragraphs[:param_paragraph_index])[3:]
+            params = [
+                Param(name=name, type=type_, description=description)
+                for name, type_, description in parse_params(
+                    paragraphs[param_paragraph_index]
+                )
+            ]
+            params = OrderedDict([param.name, param] for param in params)
+            footer = "\n\n".join(paragraphs[param_paragraph_index + 1 :])[:-3]
+        else:
+            header = doc[3:-3]
+            params = []
+            footer = ""
+
+        returns, raises, yields, footer = parse_footer(footer)
+        return cls(
+            header=header,
+            params=params,
+            returns=returns,
+            raises=raises,
+            yields=yields,
+            footer=footer,
+        )
+
+    def merge(self, other):
+        """Merge both docstring objects.
+
+        If a param exists in the second docstring, it will override the one from the first one.
+        """
+        self.header = self.header or other.header
+
+        for key in self.params.keys():
+            if key in other.params:
+                self.params[key].description = other.params[key].description
+                self.params[key].type = other.params[key].type
+        self.returns = self.returns or other.returns
+        self.yields = self.yields or other.yields
+        self.raises = self.raises or other.raises
+        self.footer = self.footer or other.footer
+
+
+def function_docstring(parso_function: Function, formatter):
     """
-    Format a google docstring for a function
+    Format a docstring for a function
 
     Args:
         parso_function (Function): The function tree node
@@ -19,50 +127,53 @@ def function_docstring(parso_function, formatter):
     """
     assert isinstance(parso_function, Function)
 
-    docstring = "\n"
+    input_doc = parso_function.get_doc_node()
+    if input_doc:
+        doc = DocString.from_parso_function(parso_function)
+        doc.merge(DocString.from_raw_doc(input_doc.value))
+    else:
+        doc = DocString.from_parso_function(parso_function)
 
-    params = parso_function.get_params()
-    if params:
+    docstring = f"{doc.header}\n"
+
+    if doc.params:
         docstring += formatter["start_args_block"]
-        for param in params:
-            if param.star_count == 1:
+        for param in doc.params.values():
+            if param.name.startswith("*"):
                 docstring += formatter["param_placeholder_args"].format(
-                    param.name.value, "Variable length argument list."
-                )
-            elif param.star_count == 2:
-                docstring += formatter["param_placeholder_kwargs"].format(
-                    param.name.value, "Arbitrary keyword arguments."
+                    param.name,
+                    "Arbitrary keyword arguments."
+                    if param.name.startswith("**")
+                    else "Variable length argument list.",
                 )
             else:
-                docstring += formatter["param_placeholder"].format(
-                    *get_param_info(param)
+                docstring += formatter["param_placeholder"](
+                    param.name, param.type, param.default, param.description
                 )
 
-    returns = list(parso_function.iter_return_stmts())
-    if returns:
+    if doc.returns:
         docstring += formatter["start_return_block"]
-        for ret in returns:
+        for ret in doc.returns:
             docstring += formatter["return_placeholder"].format(
                 *get_return_info(ret, parso_function.annotation)
             )
+    # TODO: how to handle this with merge
     elif parso_function.annotation:
         docstring += formatter["start_return_block"]
         docstring += formatter["return_annotation_placeholder"].format(
             parso_function.annotation.value
         )
 
-    yields = list(parso_function.iter_yield_exprs())
-    if yields:
+    if doc.yields:
         docstring += formatter["start_yield_block"]
-        for yie in yields:
+        for yie in doc.yields:
             docstring += formatter["yield_placeholder"].format(
                 *get_return_info(yie, parso_function.annotation)
             )
 
-    raises = list(parso_function.iter_raise_stmts())
-    if raises:
+    if doc.raises:
         docstring += formatter["start_raise_block"]
-        for exception in raises:
+        for exception in doc.raises:
             docstring += formatter["raise_placeholder"].format(
                 get_exception_name(exception)
             )
@@ -73,9 +184,10 @@ def function_docstring(parso_function, formatter):
 
 def class_docstring(parso_class, formatter):
     """
-    Format a google docstring for a class
+    Format a docstring for a class
 
-    Only documents attributes, ``__init__`` method args can be documented on the ``__init__`` method
+    Only documents attributes, ``__init__`` method args can be documented on the ``__init__``
+        method
 
     Args:
         parso_class (Class): The class tree node
@@ -111,9 +223,10 @@ def class_docstring(parso_class, formatter):
 
 def module_docstring(parso_module, formatter):
     """
-    Format a google docstring for a module
+    Format a docstring for a module
 
-    Only documents attributes, ``__init__`` method args can be documented on the ``__init__`` method
+    Only documents attributes, ``__init__`` method args can be documented on the ``__init__``
+        method
 
     Args:
         parso_module (Module): The module tree node
