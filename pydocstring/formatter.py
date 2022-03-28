@@ -1,10 +1,22 @@
 """
 Google Docstring Formatter
 """
-from parso.python.tree import Class, ExprStmt, Function, KeywordStatement, Module, Name, PythonNode
+from parso.python.tree import (
+    Class,
+    ExprStmt,
+    Function,
+    KeywordStatement,
+    Module,
+    Name,
+    PythonNode,
+)
 
-from pydocstring.format_utils import (get_exception_name, get_param_info, get_return_info,
-                                      safe_determine_type)
+from pydocstring.format_utils import (
+    get_exception_name,
+    get_param_info,
+    get_return_info,
+    safe_determine_type,
+)
 
 
 def function_docstring(parso_function, formatter):
