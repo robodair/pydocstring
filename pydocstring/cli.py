@@ -28,38 +28,43 @@ You may also want to provide the ``-f`` flag with the formatter you want to use.
     --version             show program's version number and exit
 
 """
-import sys #pragma: no cover
-import os #pragma: no cover
-import argparse #pragma: no cover
-import ast #pragma: no cover
-import pydocstring #pragma: no cover
-from pydocstring import exc #pragma: no cover
+import sys  # pragma: no cover
+import os  # pragma: no cover
+import argparse  # pragma: no cover
+import ast  # pragma: no cover
+import pydocstring  # pragma: no cover
+from pydocstring import exc  # pragma: no cover
 
 
-def main(): #pragma: no cover
+def main():  # pragma: no cover
     """
     CLI entrypoint
     """
     parser = argparse.ArgumentParser(prog="pydocstring")
-    parser.add_argument("source",
-                        type=str,
-                        help="Source code to process, or the path to a file")
-    parser.add_argument("position",
-                        nargs="?",
-                        type=ast.literal_eval,
-                        help="Position of the cursor in the document, defaults to the end. \
-                            Row, then column, presented as a string python tuple. E.g. '(10, 15)'")
-    parser.add_argument("-f", "--formatter",
-                        choices=['google', 'numpy', 'reST'],
-                        default='google',
-                        type=str,
-                        help="docstring formatter to use")
-    parser.add_argument('--version',
-                        action='version',
-                        version='%(prog)s {0}'.format(pydocstring.__version__))
-    parser.add_argument('--debug',
-                        action="store_true",
-                        help="Show stacktraces")
+    parser.add_argument(
+        "source", type=str, help="Source code to process, or the path to a file"
+    )
+    parser.add_argument(
+        "position",
+        nargs="?",
+        type=ast.literal_eval,
+        help="Position of the cursor in the document, defaults to the end. \
+                            Row, then column, presented as a string python tuple. E.g. '(10, 15)'",
+    )
+    parser.add_argument(
+        "-f",
+        "--formatter",
+        choices=["google", "numpy", "reST"],
+        default="google",
+        type=str,
+        help="docstring formatter to use",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="%(prog)s {0}".format(pydocstring.__version__),
+    )
+    parser.add_argument("--debug", action="store_true", help="Show stacktraces")
     args = parser.parse_args()
     source = args.source
 
@@ -72,9 +77,9 @@ def main(): #pragma: no cover
     print(position)
 
     try:
-        output = pydocstring.generate_docstring(source,
-                                                position=position,
-                                                formatter=args.formatter)
+        output = pydocstring.generate_docstring(
+            source, position=position, formatter=args.formatter
+        )
         print('"""\n' + output + '"""\n')
     except Exception as ex:
         if args.debug:
