@@ -8,8 +8,7 @@ __version__ = "0.2.1"
 import parso
 from parso.python.tree import BaseNode, search_ancestor
 
-import docstring_formatter
-from pydocstring import exc
+from pydocstring import exc, docstring_formatter
 
 FORMATTER = {
     "google": {
