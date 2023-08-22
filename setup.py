@@ -47,6 +47,7 @@ setup(
         ],
     },
     install_requires=[
-        'parso>=0.1.1'
+        'parso>=0.1.1',
+        'strenum>=0.4.0'
     ]
 )

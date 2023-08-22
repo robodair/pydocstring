@@ -7,12 +7,23 @@ __version__ = "0.2.1"
 
 import parso
 from parso.python.tree import BaseNode, search_ancestor
+from strenum import StrEnum
 
 import pydocstring.formatter
 from pydocstring import exc
 
+class DocstringStyle(StrEnum):
+    GOOGLE = "google"
+    NUMPY = "numpy"
+    REST = "reST"
+
+    @classmethod
+    def list_values(cls):
+        return [x.value for x in cls]
+
+
 FORMATTER = {
-    "google": {
+    DocstringStyle.GOOGLE: {
         "start_args_block": "\n\nArgs:\n",
         "param_placeholder": "    {0} ({1}): {2}\n",
         "param_placeholder_args": "    *{0}: {1}\n",
@@ -27,7 +38,7 @@ FORMATTER = {
         "start_attributes": "\n\nAttributes:\n",
         "attribute_placeholder": "    {0} ({1}): {2}\n",
     },
-    "numpy": {
+    DocstringStyle.NUMPY: {
         "start_args_block": "\n\n    Parameters\n    ----------\n",
         "param_placeholder": "    {0} : {1}\n        {2}\n",
         "param_placeholder_args": "    *{0}\n        {1}\n",
@@ -42,7 +53,7 @@ FORMATTER = {
         "start_attributes": "\n\n    Attributes\n    ----------\n",
         "attribute_placeholder": "    {0} : {1}\n        {2}\n",
     },
-    "reST": {
+    DocstringStyle.REST: {
         "start_args_block": "\n\n",
         "param_placeholder": ":param {0}: {2}\n:type {0}: {1}\n",
         "param_placeholder_args": ":param *{0}: {1}\n",
@@ -60,7 +71,7 @@ FORMATTER = {
 }
 
 
-def generate_docstring(source, position=(1, 0), formatter="google", autocomplete=False):
+def generate_docstring(source: str, position=(1, 0), formatter=DocstringStyle.GOOGLE, autocomplete=False):
     """Generate a docstring
 
     Args:
