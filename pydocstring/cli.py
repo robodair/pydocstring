@@ -33,7 +33,7 @@ import os  # pragma: no cover
 import argparse  # pragma: no cover
 import ast  # pragma: no cover
 import pydocstring  # pragma: no cover
-from pydocstring import exc  # pragma: no cover
+from pydocstring import DocstringStyle  # pragma: no cover
 
 
 def main():  # pragma: no cover
@@ -54,8 +54,8 @@ def main():  # pragma: no cover
     parser.add_argument(
         "-f",
         "--formatter",
-        choices=["google", "numpy", "reST"],
-        default="google",
+        choices=DocstringStyle.list_values(),
+        default=DocstringStyle.GOOGLE,
         type=str,
         help="docstring formatter to use",
     )
