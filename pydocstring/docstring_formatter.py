@@ -1,14 +1,12 @@
 """
-Google Docstring Formatter
+Docstring Formatter
 """
+
+from typing import Dict
 from parso.python.tree import (
     Class,
-    ExprStmt,
     Function,
-    KeywordStatement,
     Module,
-    Name,
-    PythonNode,
 )
 
 from pydocstring.format_utils import (
@@ -16,15 +14,16 @@ from pydocstring.format_utils import (
     get_param_info,
     get_return_info,
     safe_determine_type,
-)
+)   
 
 
-def function_docstring(parso_function, formatter):
+def function_docstring(parso_function, format_template: Dict[str, str]) -> str:
     """
-    Format a google docstring for a function
+    Format a docstring for a function
 
     Args:
         parso_function (Function): The function tree node
+        format_template (Dict): The specific templates used to construct the docstring
 
     Returns:
         str: The formatted docstring
@@ -35,47 +34,47 @@ def function_docstring(parso_function, formatter):
 
     params = parso_function.get_params()
     if params:
-        docstring += formatter["start_args_block"]
+        docstring += format_template["start_args_block"]
         for param in params:
             if param.star_count == 1:
-                docstring += formatter["param_placeholder_args"].format(
+                docstring += format_template["param_placeholder_args"].format(
                     param.name.value, "Variable length argument list."
                 )
             elif param.star_count == 2:
-                docstring += formatter["param_placeholder_kwargs"].format(
+                docstring += format_template["param_placeholder_kwargs"].format(
                     param.name.value, "Arbitrary keyword arguments."
                 )
             else:
-                docstring += formatter["param_placeholder"].format(
+                docstring += format_template["param_placeholder"].format(
                     *get_param_info(param)
                 )
 
     returns = list(parso_function.iter_return_stmts())
     if returns:
-        docstring += formatter["start_return_block"]
+        docstring += format_template["start_return_block"]
         for ret in returns:
-            docstring += formatter["return_placeholder"].format(
+            docstring += format_template["return_placeholder"].format(
                 *get_return_info(ret, parso_function.annotation)
             )
     elif parso_function.annotation:
-        docstring += formatter["start_return_block"]
-        docstring += formatter["return_annotation_placeholder"].format(
+        docstring += format_template["start_return_block"]
+        docstring += format_template["return_annotation_placeholder"].format(
             parso_function.annotation.value
         )
 
     yields = list(parso_function.iter_yield_exprs())
     if yields:
-        docstring += formatter["start_yield_block"]
+        docstring += format_template["start_yield_block"]
         for yie in yields:
-            docstring += formatter["yield_placeholder"].format(
+            docstring += format_template["yield_placeholder"].format(
                 *get_return_info(yie, parso_function.annotation)
             )
 
     raises = list(parso_function.iter_raise_stmts())
     if raises:
-        docstring += formatter["start_raise_block"]
+        docstring += format_template["start_raise_block"]
         for exception in raises:
-            docstring += formatter["raise_placeholder"].format(
+            docstring += format_template["raise_placeholder"].format(
                 get_exception_name(exception)
             )
 
@@ -83,14 +82,15 @@ def function_docstring(parso_function, formatter):
     return docstring
 
 
-def class_docstring(parso_class, formatter):
+def class_docstring(parso_class, format_template: Dict[str, str]) -> str:
     """
-    Format a google docstring for a class
+    Format a docstring for a class
 
     Only documents attributes, ``__init__`` method args can be documented on the ``__init__`` method
 
     Args:
         parso_class (Class): The class tree node
+        format_template (Dict): The specific templates used to construct the docstring
 
     Returns:
         str: The formatted docstring
@@ -109,26 +109,27 @@ def class_docstring(parso_class, formatter):
                             attribute_expressions.append(child3)
 
     if attribute_expressions:
-        docstring += formatter["start_attributes"]
+        docstring += format_template["start_attributes"]
         for attribute in attribute_expressions:
             name = attribute.children[0].value
             code = attribute.get_rhs().get_code().strip()
             attr_type = safe_determine_type(code)
-            attr_str = formatter["attribute_placeholder"].format(name, attr_type, code)
+            attr_str = format_template["attribute_placeholder"].format(name, attr_type, code)
             docstring += attr_str
 
     docstring += "\n"
     return docstring
 
 
-def module_docstring(parso_module, formatter):
+def module_docstring(parso_module, format_template: Dict[str, str]) -> str:
     """
-    Format a google docstring for a module
+    Format a docstring for a module
 
     Only documents attributes, ``__init__`` method args can be documented on the ``__init__`` method
 
     Args:
         parso_module (Module): The module tree node
+        format_template (Dict): The specific templates used to construct the docstring
 
     Returns:
         str: The formatted docstring
@@ -145,12 +146,12 @@ def module_docstring(parso_module, formatter):
                     attribute_expressions.append(child2)
 
     if attribute_expressions:
-        docstring += formatter["start_attributes"]
+        docstring += format_template["start_attributes"]
         for attribute in attribute_expressions:
             name = attribute.children[0].value
             code = attribute.get_rhs().get_code().strip()
             attr_type = safe_determine_type(code)
-            attr_str = formatter["attribute_placeholder"].format(name, attr_type, code)
+            attr_str = format_template["attribute_placeholder"].format(name, attr_type, code)
             docstring += attr_str
 
     docstring += "\n"
