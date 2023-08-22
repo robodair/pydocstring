@@ -8,7 +8,7 @@ __version__ = "0.2.1"
 import parso
 from parso.python.tree import BaseNode, search_ancestor
 
-import pydocstring.formatter
+import docstring_formatter
 from pydocstring import exc
 
 FORMATTER = {
@@ -112,11 +112,11 @@ def generate_docstring(source, position=(1, 0), formatter="google", autocomplete
             )
 
     if scope.type == "classdef":
-        return pydocstring.formatter.class_docstring(scope, FORMATTER[formatter])
+        return docstring_formatter.class_docstring(scope, FORMATTER[formatter])
     elif scope.type == "funcdef":
-        return pydocstring.formatter.function_docstring(scope, FORMATTER[formatter])
+        return docstring_formatter.function_docstring(scope, FORMATTER[formatter])
     elif scope.type == "file_input":
-        return pydocstring.formatter.module_docstring(scope, FORMATTER[formatter])
+        return docstring_formatter.module_docstring(scope, FORMATTER[formatter])
 
     raise exc.FailedToGenerateDocstringError(
         "Failed to generate Docstring for: {}".format(scope)
