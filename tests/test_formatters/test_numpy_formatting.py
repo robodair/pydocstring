@@ -5,7 +5,7 @@ Test simple formatting of numpy style docstrings
 import sys
 import unittest
 import pytest
-from pydocstring.exc import FailedToGenerateDocstringError
+
 from pydocstring import generate_docstring
 
 

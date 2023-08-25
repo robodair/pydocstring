@@ -17,3 +17,11 @@ class FailedToGenerateDocstringError(Exception):
     """
 
     pass
+
+
+class FailedToIngestError(Exception):
+    """
+    Could not ingest the provided source text
+    """
+
+    pass
